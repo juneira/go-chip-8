@@ -26,9 +26,16 @@ func (c *Cpu) Log() {
 }
 
 // Process is a function that process a register
-func (c *Cpu) Process(instr Instruction) {
-	x := 0x0F & instr[0]
-	y := instr[1] >> 4
+func (c *Cpu) Process(instr Instruction) error {
+	x, err := instr.GetX()
+	if err != nil {
+		return err
+	}
+
+	y, err := instr.GetY()
+	if err != nil {
+		return err
+	}
 
 	val := c.register[x] + c.register[y]
 
@@ -37,4 +44,6 @@ func (c *Cpu) Process(instr Instruction) {
 	}
 
 	c.register[x] = val
+
+	return nil
 }

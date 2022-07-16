@@ -23,48 +23,67 @@ func TestCpu_Log(t *testing.T) {
 	}
 }
 
+type cpuTestCase struct {
+	describe string
+	instr    chip8.Instruction
+	contexts []cpuTestCaseContext
+}
+
+type cpuTestCaseContext struct {
+	context          string
+	register         chip8.Register
+	expectedRegister chip8.Register
+}
+
 func TestCpu_Process(t *testing.T) {
-	t.Run("instruction 0x8XY4", func(t *testing.T) {
-		instr := chip8.Instruction{0x80, 0x14}
+	tests := []cpuTestCase{
+		{
+			describe: "instruction 0x8XY4",
+			instr:    chip8.Instruction{0x80, 0x14},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when carry does not occur",
+					register:         chip8.Register{0xF0, 0x0F},
+					expectedRegister: chip8.Register{0xFF, 0x0F},
+				},
+				{
+					context:          "when carry occurs",
+					register:         chip8.Register{0xFF, 0xFF},
+					expectedRegister: chip8.Register{0xFE, 0xFF},
+				},
+			},
+		},
+	}
 
-		t.Run("when carry does not occur", func(t *testing.T) {
-			register := chip8.Register{0xF0, 0x0F}
-			output := &bytes.Buffer{}
-			cpu := chip8.NewCpu(register, output)
+	// set flags
+	tests[0].contexts[1].expectedRegister[0xF] = 1
 
-			cpu.Process(instr)
-			cpu.Log()
+	for _, test := range tests {
+		t.Run(test.describe, func(t *testing.T) {
+			instr := chip8.Instruction{0x80, 0x14}
 
-			expectedRegister := chip8.Register{0xFF, 0x0F}
-			expectedRegister[0xF] = 0x0
+			for _, context := range test.contexts {
+				t.Run(context.context, func(t *testing.T) {
+					output := &bytes.Buffer{}
+					cpu := chip8.NewCpu(context.register, output)
 
-			result := output.Bytes()
-			expected := registersToStr(expectedRegister)
+					err := cpu.Process(instr)
+					if err != nil {
+						t.Fatalf("error not expected: %s", err.Error())
+					}
 
-			if string(result) != string(expected) {
-				t.Errorf("result: %s, expected: %s", result, expected)
+					cpu.Log()
+
+					result := output.Bytes()
+					expected := registersToStr(context.expectedRegister)
+
+					if string(result) != string(expected) {
+						t.Errorf("result: %s, expected: %s", result, expected)
+					}
+				})
 			}
 		})
-
-		t.Run("when carry occurs", func(t *testing.T) {
-			register := chip8.Register{0xFF, 0x0FF}
-			output := &bytes.Buffer{}
-			cpu := chip8.NewCpu(register, output)
-
-			cpu.Process(instr)
-			cpu.Log()
-
-			expectedRegister := chip8.Register{0xFF, 0xFF}
-			expectedRegister[0xF] = 0x01
-
-			result := output.Bytes()
-			expected := registersToStr(expectedRegister)
-
-			if string(result) != string(expected) {
-				t.Errorf("result: %s, expected: %s", result, expected)
-			}
-		})
-	})
+	}
 }
 
 func registersToStr(registers chip8.Register) []byte {

@@ -6,14 +6,14 @@ import (
 	chip8 "github.com/MarceloMPJR/go-chip-8"
 )
 
-type testCase struct {
+type instrTestCase struct {
 	instr           chip8.Instruction
 	expected        uint16
 	isExpectedError bool
 }
 
 func TestInstruction_GetX(t *testing.T) {
-	tests := []testCase{
+	tests := []instrTestCase{
 		{chip8.Instruction{0x31, 0x02}, 0x01, false},
 		{chip8.Instruction{0x42, 0x03}, 0x02, false},
 		{chip8.Instruction{0x53, 0x02}, 0x03, false},
@@ -31,7 +31,7 @@ func TestInstruction_GetX(t *testing.T) {
 }
 
 func TestInstruction_GetY(t *testing.T) {
-	tests := []testCase{
+	tests := []instrTestCase{
 		{chip8.Instruction{0x52, 0x14}, 0x01, false},
 		{chip8.Instruction{0x83, 0x22}, 0x02, false},
 		{chip8.Instruction{0x91, 0x30}, 0x03, false},
@@ -49,7 +49,7 @@ func TestInstruction_GetY(t *testing.T) {
 }
 
 func TestInstruction_GetN(t *testing.T) {
-	tests := []testCase{
+	tests := []instrTestCase{
 		{chip8.Instruction{0xD1, 0xF1}, 0x01, false},
 		{chip8.Instruction{0xD2, 0xA2}, 0x02, false},
 		{chip8.Instruction{0xDA, 0x03}, 0x03, false},
@@ -67,7 +67,7 @@ func TestInstruction_GetN(t *testing.T) {
 }
 
 func TestInstruction_GetNN(t *testing.T) {
-	tests := []testCase{
+	tests := []instrTestCase{
 		{chip8.Instruction{0x3A, 0x10}, 0x10, false},
 		{chip8.Instruction{0x4E, 0x20}, 0x20, false},
 		{chip8.Instruction{0x60, 0xAB}, 0xAB, false},
@@ -85,7 +85,7 @@ func TestInstruction_GetNN(t *testing.T) {
 }
 
 func TestInstruction_GetNNN(t *testing.T) {
-	tests := []testCase{
+	tests := []instrTestCase{
 		{chip8.Instruction{0x1A, 0x10}, 0xA10, false},
 		{chip8.Instruction{0x2E, 0x20}, 0xE20, false},
 		{chip8.Instruction{0xA0, 0xAB}, 0x0AB, false},
@@ -102,7 +102,7 @@ func TestInstruction_GetNNN(t *testing.T) {
 	}
 }
 
-func checkResult(t *testing.T, result uint16, err error, test testCase) {
+func checkResult(t *testing.T, result uint16, err error, test instrTestCase) {
 	t.Helper()
 
 	if err != nil && !test.isExpectedError {
