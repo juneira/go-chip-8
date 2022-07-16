@@ -1,4 +1,4 @@
-package rom_test
+package chip8_test
 
 import (
 	"bytes"
