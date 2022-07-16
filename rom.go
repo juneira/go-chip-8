@@ -2,8 +2,6 @@ package chip8
 
 import "io"
 
-type Instruction []byte
-
 type Rom struct {
 	data io.Reader
 }
