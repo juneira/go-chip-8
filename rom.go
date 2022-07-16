@@ -1,8 +1,6 @@
 package chip8
 
-import (
-	"io"
-)
+import "io"
 
 type Instruction []byte
 
@@ -16,7 +14,7 @@ func NewRom(data io.Reader) *Rom {
 }
 
 // NextInstruction return the next instruction
-func (r *Rom) NextByte() *Instruction {
+func (r *Rom) NextInstruction() *Instruction {
 	instr := make(Instruction, 2)
 	r.data.Read(instr)
 

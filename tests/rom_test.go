@@ -18,7 +18,7 @@ func TestRom_NextInstruction(t *testing.T) {
 	for i := 0; i < len(buf); i += 2 {
 		expected := chip8.Instruction(buf[i : i+2])
 
-		checkInstruction(t, rom.NextByte(), &expected)
+		checkInstruction(t, rom.NextInstruction(), &expected)
 	}
 }
 
