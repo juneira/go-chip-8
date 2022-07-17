@@ -53,21 +53,39 @@ func TestCpu_Process(t *testing.T) {
 				},
 			},
 		},
+		{
+			describe: "instruction 0x8XY5",
+			instr:    chip8.Instruction{0x80, 0x15},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when borrow does not occur",
+					register:         chip8.Register{0xFF, 0x0F},
+					expectedRegister: chip8.Register{0xF0, 0x0F},
+				},
+				{
+					context:          "when borrow occurs",
+					register:         chip8.Register{0x0F, 0xFF},
+					expectedRegister: chip8.Register{0x10, 0xFF},
+				},
+			},
+		},
 	}
 
 	// set flags
+	// 0x8XY4
 	tests[0].contexts[1].expectedRegister[0xF] = 1
+
+	// 0x8XY5
+	tests[1].contexts[0].expectedRegister[0xF] = 1
 
 	for _, test := range tests {
 		t.Run(test.describe, func(t *testing.T) {
-			instr := chip8.Instruction{0x80, 0x14}
-
 			for _, context := range test.contexts {
 				t.Run(context.context, func(t *testing.T) {
 					output := &bytes.Buffer{}
 					cpu := chip8.NewCpu(context.register, output)
 
-					err := cpu.Process(instr)
+					err := cpu.Process(test.instr)
 					if err != nil {
 						t.Fatalf("error not expected: %s", err.Error())
 					}

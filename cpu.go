@@ -27,6 +27,14 @@ func (c *Cpu) Log() {
 
 // Process is a function that process a register
 func (c *Cpu) Process(instr Instruction) error {
+	if err := c.handle(instr); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Cpu) handle(instr Instruction) error {
 	x, err := instr.GetX()
 	if err != nil {
 		return err
@@ -37,6 +45,25 @@ func (c *Cpu) Process(instr Instruction) error {
 		return err
 	}
 
+	instrType, instrSubtype, err := instr.GetTypeAndSubType()
+	if err != nil {
+		return err
+	}
+
+	switch instrType {
+	case 0x08:
+		switch instrSubtype {
+		case 0x04:
+			c.process0x8XY4(x, y)
+		case 0x05:
+			c.process0x8XY5(x, y)
+		}
+	}
+
+	return nil
+}
+
+func (c *Cpu) process0x8XY4(x, y byte) {
 	val := c.register[x] + c.register[y]
 
 	if int(c.register[x])+int(c.register[y]) > 0xFF {
@@ -44,6 +71,14 @@ func (c *Cpu) Process(instr Instruction) error {
 	}
 
 	c.register[x] = val
+}
 
-	return nil
+func (c *Cpu) process0x8XY5(x, y byte) {
+	val := c.register[x] - c.register[y]
+
+	if int(c.register[x])-int(c.register[y]) >= 0x0 {
+		c.register[0xF] = 0x01
+	}
+
+	c.register[x] = val
 }
