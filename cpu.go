@@ -51,12 +51,14 @@ func (c *Cpu) handle(instr Instruction) error {
 	}
 
 	switch instrType {
-	case 0x08:
+	case InstructionType(0x08):
 		switch instrSubtype {
-		case 0x04:
+		case InstructionSubType(0x04):
 			c.process0x8XY4(x, y)
-		case 0x05:
+		case InstructionSubType(0x05):
 			c.process0x8XY5(x, y)
+		case InstructionSubType(0x07):
+			c.process0x8XY7(x, y)
 		}
 	}
 
@@ -77,6 +79,16 @@ func (c *Cpu) process0x8XY5(x, y byte) {
 	val := c.register[x] - c.register[y]
 
 	if int(c.register[x])-int(c.register[y]) >= 0x0 {
+		c.register[0xF] = 0x01
+	}
+
+	c.register[x] = val
+}
+
+func (c *Cpu) process0x8XY7(x, y byte) {
+	val := c.register[y] - c.register[x]
+
+	if int(c.register[y])-int(c.register[x]) >= 0x0 {
 		c.register[0xF] = 0x01
 	}
 
