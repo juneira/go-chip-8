@@ -8,23 +8,24 @@ import (
 
 type instrTypeTestCase struct {
 	instr           chip8.Instruction
-	expected        *chip8.InstructionType
+	expectedType    chip8.InstructionType
+	expectedSubType chip8.InstructionSubType
 	isExpectedError bool
 }
 
 func TestInstruction_GetInstructionType(t *testing.T) {
 	tests := []instrTypeTestCase{
-		{chip8.Instruction{0x31, 0x02}, chip8.NewInstructionType(0x03, 0x02), false},
-		{chip8.Instruction{0x42, 0xD3}, chip8.NewInstructionType(0x04, 0x03), false},
-		{chip8.Instruction{0x53, 0xF2}, chip8.NewInstructionType(0x05, 0x02), false},
-		{chip8.Instruction{0xFF, 0xA6}, chip8.NewInstructionType(0x0F, 0x06), false},
-		{chip8.Instruction{0xFF, 0x06, 0x06}, nil, true},
-		{chip8.Instruction{0xFF}, nil, true},
-		{chip8.Instruction{}, nil, true},
+		{chip8.Instruction{0x31, 0x02}, 0x03, 0x02, false},
+		{chip8.Instruction{0x42, 0xD3}, 0x04, 0x03, false},
+		{chip8.Instruction{0x53, 0xF2}, 0x05, 0x02, false},
+		{chip8.Instruction{0xFF, 0xA6}, 0x0F, 0x06, false},
+		{chip8.Instruction{0xFF, 0x06, 0x06}, 0x0, 0x0, true},
+		{chip8.Instruction{0xFF}, 0x0, 0x0, true},
+		{chip8.Instruction{}, 0x0, 0x0, true},
 	}
 
 	for _, test := range tests {
-		result, err := test.instr.GetInstructionType()
+		typeResult, subTypeResult, err := test.instr.GetTypeAndSubType()
 
 		if test.isExpectedError {
 			if err == nil {
@@ -35,8 +36,12 @@ func TestInstruction_GetInstructionType(t *testing.T) {
 				t.Fatalf("error not expected: %s", err.Error())
 			}
 
-			if *result != *test.expected {
-				t.Errorf("result: 0x%X, expected: 0x%X", result, test.expected)
+			if typeResult != test.expectedType {
+				t.Errorf("result: 0x%X, expected: 0x%X", typeResult, test.expectedType)
+			}
+
+			if subTypeResult != test.expectedSubType {
+				t.Errorf("result: 0x%X, expected: 0x%X", subTypeResult, test.expectedSubType)
 			}
 		}
 	}
