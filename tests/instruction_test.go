@@ -1,17 +1,10 @@
 package chip8_test
 
 import (
-	"reflect"
 	"testing"
 
 	chip8 "github.com/MarceloMPJR/go-chip-8"
 )
-
-type instrTestCase struct {
-	instr           chip8.Instruction
-	expected        uint16
-	isExpectedError bool
-}
 
 type instrTypeTestCase struct {
 	instr           chip8.Instruction
@@ -42,11 +35,17 @@ func TestInstruction_GetInstructionType(t *testing.T) {
 				t.Fatalf("error not expected: %s", err.Error())
 			}
 
-			if !reflect.DeepEqual(*result, *test.expected) {
+			if *result != *test.expected {
 				t.Errorf("result: 0x%X, expected: 0x%X", result, test.expected)
 			}
 		}
 	}
+}
+
+type instrTestCase struct {
+	instr           chip8.Instruction
+	expected        uint16
+	isExpectedError bool
 }
 
 func TestInstruction_GetX(t *testing.T) {

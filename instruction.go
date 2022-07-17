@@ -11,6 +11,7 @@ type InstructionType struct {
 	lastNibble  byte
 }
 
+// NewInstructionType receive the parameters firstNibble and lastNibble and return a InstructionType
 func NewInstructionType(firstNibble, lastNibble byte) *InstructionType {
 	return &InstructionType{firstNibble: firstNibble, lastNibble: lastNibble}
 }
