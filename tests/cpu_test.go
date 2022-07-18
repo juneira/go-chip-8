@@ -38,6 +38,22 @@ type cpuTestCaseContext struct {
 func TestCpu_Process(t *testing.T) {
 	tests := []cpuTestCase{
 		{
+			describe: "instruction 0x8XY0",
+			instr:    chip8.Instruction{0x81, 0x20},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when X has different value of Y",
+					register:         chip8.Register{0x0F, 0xAB, 0xCD},
+					expectedRegister: chip8.Register{0x0F, 0xCD, 0xCD},
+				},
+				{
+					context:          "when X has equals value of Y",
+					register:         chip8.Register{0x0F, 0xAB, 0xAB},
+					expectedRegister: chip8.Register{0x0F, 0xAB, 0xAB},
+				},
+			},
+		},
+		{
 			describe: "instruction 0x8XY4",
 			instr:    chip8.Instruction{0x80, 0x14},
 			contexts: []cpuTestCaseContext{
@@ -89,13 +105,13 @@ func TestCpu_Process(t *testing.T) {
 
 	// set flags
 	// 0x8XY4
-	tests[0].contexts[1].expectedRegister[0xF] = 1
+	tests[1].contexts[1].expectedRegister[0xF] = 1
 
 	// 0x8XY5
-	tests[1].contexts[0].expectedRegister[0xF] = 1
+	tests[2].contexts[0].expectedRegister[0xF] = 1
 
 	// 0x8XY7
-	tests[2].contexts[0].expectedRegister[0xF] = 1
+	tests[3].contexts[0].expectedRegister[0xF] = 1
 
 	for _, test := range tests {
 		t.Run(test.describe, func(t *testing.T) {
