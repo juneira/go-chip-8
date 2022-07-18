@@ -33,6 +33,7 @@ type cpuTestCaseContext struct {
 	context          string
 	register         chip8.Register
 	expectedRegister chip8.Register
+	flag             bool
 }
 
 func TestCpu_Process(t *testing.T) {
@@ -66,6 +67,7 @@ func TestCpu_Process(t *testing.T) {
 					context:          "when carry occurs",
 					register:         chip8.Register{0xFF, 0xFF},
 					expectedRegister: chip8.Register{0xFE, 0xFF},
+					flag:             true,
 				},
 			},
 		},
@@ -77,6 +79,7 @@ func TestCpu_Process(t *testing.T) {
 					context:          "when borrow does not occur",
 					register:         chip8.Register{0xFF, 0x0F},
 					expectedRegister: chip8.Register{0xF0, 0x0F},
+					flag:             true,
 				},
 				{
 					context:          "when borrow occurs",
@@ -93,6 +96,7 @@ func TestCpu_Process(t *testing.T) {
 					context:          "when borrow does not occur",
 					register:         chip8.Register{0x0F, 0xFF},
 					expectedRegister: chip8.Register{0xF0, 0xFF},
+					flag:             true,
 				},
 				{
 					context:          "when borrow occurs",
@@ -103,15 +107,8 @@ func TestCpu_Process(t *testing.T) {
 		},
 	}
 
-	// set flags
-	// 0x8XY4
-	tests[1].contexts[1].expectedRegister[0xF] = 1
-
-	// 0x8XY5
-	tests[2].contexts[0].expectedRegister[0xF] = 1
-
-	// 0x8XY7
-	tests[3].contexts[0].expectedRegister[0xF] = 1
+	// Set register 0xF when flag is true
+	setFlags(tests)
 
 	for _, test := range tests {
 		t.Run(test.describe, func(t *testing.T) {
@@ -136,6 +133,16 @@ func TestCpu_Process(t *testing.T) {
 				})
 			}
 		})
+	}
+}
+
+func setFlags(tests []cpuTestCase) {
+	for i, test := range tests {
+		for j, context := range test.contexts {
+			if context.flag {
+				tests[i].contexts[j].expectedRegister[0xF] = 1
+			}
+		}
 	}
 }
 
