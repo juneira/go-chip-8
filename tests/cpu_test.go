@@ -71,6 +71,22 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0x8XY2",
+			instr:    chip8.Instruction{0x80, 0x22},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when X has different value of Y",
+					register:         chip8.Register{0xAB, 0x0F, 0xCD},
+					expectedRegister: chip8.Register{0x89, 0x0F, 0xCD},
+				},
+				{
+					context:          "when X has equals value of Y",
+					register:         chip8.Register{0xAB, 0x0F, 0xAB},
+					expectedRegister: chip8.Register{0xAB, 0x0F, 0xAB},
+				},
+			},
+		},
+		{
 			describe: "instruction 0x8XY4",
 			instr:    chip8.Instruction{0x80, 0x14},
 			contexts: []cpuTestCaseContext{
