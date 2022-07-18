@@ -25,7 +25,7 @@ func (c *Cpu) Log() {
 	}
 }
 
-// Process is a function that process a register
+// Process is a function that process a instruction
 func (c *Cpu) Process(instr Instruction) error {
 	if err := c.handle(instr); err != nil {
 		return err
