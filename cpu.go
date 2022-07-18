@@ -3,6 +3,7 @@ package chip8
 import (
 	"fmt"
 	"io"
+	"math/rand"
 )
 
 type Register [0x10]byte
@@ -81,6 +82,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		case InstructionSubType(0x0E):
 			c.process0x8XYE(x, y)
 		}
+	case InstructionType(0x0C):
+		c.process0xCXNN(x, nn)
 	}
 
 	return nil
@@ -148,4 +151,8 @@ func (c *Cpu) process0x8XY7(x, y byte) {
 func (c *Cpu) process0x8XYE(x, y byte) {
 	c.register[0xF] = (c.register[x] >> 7)
 	c.register[x] <<= c.register[y]
+}
+
+func (c *Cpu) process0xCXNN(x, nn byte) {
+	c.register[x] = byte(rand.Intn(0xFF)) & nn
 }

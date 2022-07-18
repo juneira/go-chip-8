@@ -3,6 +3,7 @@ package chip8_test
 import (
 	"bytes"
 	"fmt"
+	"math/rand"
 	"testing"
 
 	chip8 "github.com/MarceloMPJR/go-chip-8"
@@ -219,7 +220,20 @@ func TestCpu_Process(t *testing.T) {
 				},
 			},
 		},
+		{
+			describe: "instruction 0xCXNN",
+			instr:    chip8.Instruction{0xC0, 0x5E},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when random number is 0x0E",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0x0E, 0xBB},
+				},
+			},
+		},
 	}
+
+	rand.Seed(51153153)
 
 	// Set register 0xF when flag is true
 	setFlags(tests)
