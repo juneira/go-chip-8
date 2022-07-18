@@ -137,6 +137,23 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0x8XY6",
+			instr:    chip8.Instruction{0x80, 0x16},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when the old least significant bit is 0",
+					register:         chip8.Register{0xAE, 0x03},
+					expectedRegister: chip8.Register{0x15, 0x03},
+				},
+				{
+					context:          "when the old least significant bit is 1",
+					register:         chip8.Register{0xAF, 0x03},
+					expectedRegister: chip8.Register{0x15, 0x03},
+					flag:             true,
+				},
+			},
+		},
+		{
 			describe: "instruction 0x8XY7",
 			instr:    chip8.Instruction{0x80, 0x17},
 			contexts: []cpuTestCaseContext{

@@ -65,6 +65,8 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0x8XY4(x, y)
 		case InstructionSubType(0x05):
 			c.process0x8XY5(x, y)
+		case InstructionSubType(0x06):
+			c.process0x8XY6(x, y)
 		case InstructionSubType(0x07):
 			c.process0x8XY7(x, y)
 		}
@@ -107,6 +109,11 @@ func (c *Cpu) process0x8XY5(x, y byte) {
 	}
 
 	c.register[x] = val
+}
+
+func (c *Cpu) process0x8XY6(x, y byte) {
+	c.register[0xF] = c.register[x] % 2
+	c.register[x] >>= c.register[y]
 }
 
 func (c *Cpu) process0x8XY7(x, y byte) {
