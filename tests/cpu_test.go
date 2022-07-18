@@ -39,6 +39,22 @@ type cpuTestCaseContext struct {
 func TestCpu_Process(t *testing.T) {
 	tests := []cpuTestCase{
 		{
+			describe: "instruction 0x6XNN",
+			instr:    chip8.Instruction{0x61, 0x50},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when X has different value of NN",
+					register:         chip8.Register{0x0F, 0xAB, 0xCD},
+					expectedRegister: chip8.Register{0x0F, 0x50, 0xCD},
+				},
+				{
+					context:          "when X has equals value of NN",
+					register:         chip8.Register{0x0F, 0x50, 0xAB},
+					expectedRegister: chip8.Register{0x0F, 0x50, 0xAB},
+				},
+			},
+		},
+		{
 			describe: "instruction 0x8XY0",
 			instr:    chip8.Instruction{0x81, 0x20},
 			contexts: []cpuTestCaseContext{
