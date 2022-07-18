@@ -69,6 +69,8 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0x8XY6(x, y)
 		case InstructionSubType(0x07):
 			c.process0x8XY7(x, y)
+		case InstructionSubType(0x0E):
+			c.process0x8XYE(x, y)
 		}
 	}
 
@@ -124,4 +126,9 @@ func (c *Cpu) process0x8XY7(x, y byte) {
 	}
 
 	c.register[x] = val
+}
+
+func (c *Cpu) process0x8XYE(x, y byte) {
+	c.register[0xF] = (c.register[x] >> 7)
+	c.register[x] <<= c.register[y]
 }

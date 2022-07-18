@@ -170,6 +170,23 @@ func TestCpu_Process(t *testing.T) {
 				},
 			},
 		},
+		{
+			describe: "instruction 0x8XYE",
+			instr:    chip8.Instruction{0x80, 0x1E},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when the old most significant bit is 0",
+					register:         chip8.Register{0x1E, 0x03},
+					expectedRegister: chip8.Register{0xF0, 0x03},
+				},
+				{
+					context:          "when the old most significant bit is 1",
+					register:         chip8.Register{0xAE, 0x03},
+					expectedRegister: chip8.Register{0x70, 0x03},
+					flag:             true,
+				},
+			},
+		},
 	}
 
 	// Set register 0xF when flag is true
