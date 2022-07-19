@@ -11,15 +11,19 @@ type Register [0x10]byte
 type Cpu struct {
 	register Register
 	output   io.Writer
+	pc       uint16
 }
 
 // NewCpu is a function that receive a "output" as param and return a pointer to Cpu
-func NewCpu(register Register, output io.Writer) *Cpu {
-	return &Cpu{register: register, output: output}
+func NewCpu(register Register, output io.Writer, pc uint16) *Cpu {
+	return &Cpu{register: register, output: output, pc: pc}
 }
 
 // Log is a function that write values of registers to "output" of Cpu
 func (c *Cpu) Log() {
+	str := fmt.Sprintf("pc = %x\n", c.pc)
+	c.output.Write([]byte(str))
+
 	for i := 0; i < len(c.register); i++ {
 		str := fmt.Sprintf("register[%d] = %x\n", i, c.register[i])
 		c.output.Write([]byte(str))
@@ -59,8 +63,10 @@ func (c *Cpu) handle(instr Instruction) error {
 	switch instrType {
 	case InstructionType(0x06):
 		c.process0x6XNN(x, nn)
+		c.pc++
 	case InstructionType(0x07):
 		c.process0x7XNN(x, nn)
+		c.pc++
 	case InstructionType(0x08):
 		switch instrSubtype {
 		case InstructionSubType(0x00):
@@ -82,8 +88,10 @@ func (c *Cpu) handle(instr Instruction) error {
 		case InstructionSubType(0x0E):
 			c.process0x8XYE(x, y)
 		}
+		c.pc++
 	case InstructionType(0x0C):
 		c.process0xCXNN(x, nn)
+		c.pc++
 	}
 
 	return nil
