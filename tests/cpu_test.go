@@ -45,7 +45,7 @@ func TestCpu_Process(t *testing.T) {
 			instr:    chip8.Instruction{0x1F, 0x5A},
 			contexts: []cpuTestCaseContext{
 				{
-					context:          "when I has different value of NNN",
+					context:          "when PC has different value of NNN",
 					register:         chip8.Register{},
 					expectedRegister: chip8.Register{},
 					pcExpected:       0xF5A,
