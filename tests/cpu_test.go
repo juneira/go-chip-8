@@ -256,6 +256,18 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xBNNN",
+			instr:    chip8.Instruction{0xBA, 0xBC},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when NNN+V0 is less or equal than 0xFFF)",
+					register:         chip8.Register{0x4A, 0xAB, 0xCD},
+					expectedRegister: chip8.Register{0x4A, 0xAB, 0xCD},
+					pcExpected:       0xB06,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xCXNN",
 			instr:    chip8.Instruction{0xC0, 0x5E},
 			contexts: []cpuTestCaseContext{

@@ -93,6 +93,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		case InstructionSubType(0x0E):
 			c.process0x8XYE(x, y)
 		}
+	case InstructionType(0x0B):
+		c.process0xBNNN(nnn)
 	case InstructionType(0x0C):
 		c.process0xCXNN(x, nn)
 	}
@@ -177,6 +179,10 @@ func (c *Cpu) process0x8XYE(x, y byte) {
 	c.register[0xF] = (c.register[x] >> 7)
 	c.register[x] <<= c.register[y]
 	c.pc++
+}
+
+func (c *Cpu) process0xBNNN(nnn uint16) {
+	c.pc = nnn + uint16(c.register[0])
 }
 
 func (c *Cpu) process0xCXNN(x, nn byte) {
