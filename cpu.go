@@ -68,6 +68,8 @@ func (c *Cpu) handle(instr Instruction) error {
 	switch instrType {
 	case InstructionType(0x01):
 		c.process0x1NNN(nnn)
+	case InstructionType(0x03):
+		c.process0x3XNN(x, nn)
 	case InstructionType(0x06):
 		c.process0x6XNN(x, nn)
 	case InstructionType(0x07):
@@ -104,6 +106,14 @@ func (c *Cpu) handle(instr Instruction) error {
 
 func (c *Cpu) process0x1NNN(nnn uint16) {
 	c.pc = nnn
+}
+
+func (c *Cpu) process0x3XNN(x, nn byte) {
+	if c.register[x] != nn {
+		c.pc++
+		return
+	}
+	c.pc += 2
 }
 
 func (c *Cpu) process0x6XNN(x, nn byte) {
