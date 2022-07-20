@@ -17,7 +17,7 @@ func TestCpu_Log(t *testing.T) {
 	cpu.Log()
 
 	result := output.Bytes()
-	expected := cpuToStr(0x0, expectedRegister)
+	expected := cpuToStr(0x0, 0x0, expectedRegister)
 
 	if string(result) != string(expected) {
 		t.Errorf("result: %s, expected: %s", result, expected)
@@ -35,6 +35,7 @@ type cpuTestCaseContext struct {
 	register         chip8.Register
 	expectedRegister chip8.Register
 	pcExpected       uint16
+	iExpected        uint16
 	flag             bool
 }
 
@@ -310,6 +311,37 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0x9XY0",
+			instr:    chip8.Instruction{0x90, 0x10},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when value of V[X] is equal to V[Y]",
+					register:         chip8.Register{0x5A, 0x5A},
+					expectedRegister: chip8.Register{0x5A, 0x5A},
+					pcExpected:       0x1,
+				},
+				{
+					context:          "when value of V[X] is different to NN",
+					register:         chip8.Register{0x5A, 0x4F},
+					expectedRegister: chip8.Register{0x5A, 0x4F},
+					pcExpected:       0x2,
+				},
+			},
+		},
+		{
+			describe: "instruction 0xANNN",
+			instr:    chip8.Instruction{0xAA, 0xBC},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when value of I is different to NNN",
+					register:         chip8.Register{0x5A, 0x5A},
+					expectedRegister: chip8.Register{0x5A, 0x5A},
+					pcExpected:       0x1,
+					iExpected:        0xABC,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xBNNN",
 			instr:    chip8.Instruction{0xBA, 0xBC},
 			contexts: []cpuTestCaseContext{
@@ -330,6 +362,19 @@ func TestCpu_Process(t *testing.T) {
 					register:         chip8.Register{0xFA, 0xBB},
 					expectedRegister: chip8.Register{0x0E, 0xBB},
 					pcExpected:       0x1,
+				},
+			},
+		},
+		{
+			describe: "instruction 0xFX1E",
+			instr:    chip8.Instruction{0xF0, 0x1E},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when i + V[X] is less than 0xFF",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					iExpected:        0xFA,
 				},
 			},
 		},
@@ -355,7 +400,7 @@ func TestCpu_Process(t *testing.T) {
 					cpu.Log()
 
 					result := output.Bytes()
-					expected := cpuToStr(context.pcExpected, context.expectedRegister)
+					expected := cpuToStr(context.pcExpected, context.iExpected, context.expectedRegister)
 
 					if string(result) != string(expected) {
 						t.Errorf("result: %s, expected: %s", result, expected)
@@ -376,8 +421,9 @@ func setFlags(tests []cpuTestCase) {
 	}
 }
 
-func cpuToStr(pcExpected uint16, registers chip8.Register) []byte {
+func cpuToStr(pcExpected, iExpected uint16, registers chip8.Register) []byte {
 	str := fmt.Sprintf("pc = %x\n", pcExpected)
+	str += fmt.Sprintf("i = %x\n", iExpected)
 	for i := 0; i < len(registers); i++ {
 		str += fmt.Sprintf("register[%d] = %x\n", i, registers[i])
 	}

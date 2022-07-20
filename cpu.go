@@ -12,6 +12,7 @@ type Cpu struct {
 	register Register
 	output   io.Writer
 	pc       uint16
+	i        uint16
 }
 
 // NewCpu is a function that receive a "output" as param and return a pointer to Cpu
@@ -22,6 +23,7 @@ func NewCpu(register Register, output io.Writer, pc uint16) *Cpu {
 // Log is a function that write values of registers to "output" of Cpu
 func (c *Cpu) Log() {
 	str := fmt.Sprintf("pc = %x\n", c.pc)
+	str += fmt.Sprintf("i = %x\n", c.i)
 	c.output.Write([]byte(str))
 
 	for i := 0; i < len(c.register); i++ {
@@ -102,10 +104,22 @@ func (c *Cpu) handle(instr Instruction) error {
 		case InstructionSubType(0x0E):
 			c.process0x8XYE(x, y)
 		}
+	case InstructionType(0x09):
+		switch instrSubtype {
+		case InstructionSubType(0x00):
+			c.process0x9XY0(x, y)
+		}
+	case InstructionType(0x0A):
+		c.process0xANNN(nnn)
 	case InstructionType(0x0B):
 		c.process0xBNNN(nnn)
 	case InstructionType(0x0C):
 		c.process0xCXNN(x, nn)
+	case InstructionType(0x0F):
+		switch nn {
+		case 0x1E:
+			c.process0xFX1E(x)
+		}
 	}
 
 	return nil
@@ -214,11 +228,29 @@ func (c *Cpu) process0x8XYE(x, y byte) {
 	c.pc++
 }
 
+func (c *Cpu) process0x9XY0(x, y byte) {
+	if c.register[x] == c.register[y] {
+		c.pc++
+		return
+	}
+	c.pc += 2
+}
+
+func (c *Cpu) process0xANNN(nnn uint16) {
+	c.i = nnn
+	c.pc++
+}
+
 func (c *Cpu) process0xBNNN(nnn uint16) {
 	c.pc = nnn + uint16(c.register[0])
 }
 
 func (c *Cpu) process0xCXNN(x, nn byte) {
 	c.register[x] = byte(rand.Intn(0xFF)) & nn
+	c.pc++
+}
+
+func (c *Cpu) process0xFX1E(x byte) {
+	c.i += uint16(c.register[x])
 	c.pc++
 }
