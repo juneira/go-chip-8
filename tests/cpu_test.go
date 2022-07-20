@@ -53,6 +53,60 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0x3XNN",
+			instr:    chip8.Instruction{0x30, 0x5A},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when value of V[X] is equal to NN",
+					register:         chip8.Register{0x5A},
+					expectedRegister: chip8.Register{0x5A},
+					pcExpected:       0x2,
+				},
+				{
+					context:          "when value of V[X] is different to NN",
+					register:         chip8.Register{0x4F},
+					expectedRegister: chip8.Register{0x4F},
+					pcExpected:       0x1,
+				},
+			},
+		},
+		{
+			describe: "instruction 0x4XNN",
+			instr:    chip8.Instruction{0x40, 0x5A},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when value of V[X] is equal to NN",
+					register:         chip8.Register{0x5A},
+					expectedRegister: chip8.Register{0x5A},
+					pcExpected:       0x1,
+				},
+				{
+					context:          "when value of V[X] is different to NN",
+					register:         chip8.Register{0x4F},
+					expectedRegister: chip8.Register{0x4F},
+					pcExpected:       0x2,
+				},
+			},
+		},
+		{
+			describe: "instruction 0x5XY0",
+			instr:    chip8.Instruction{0x50, 0x10},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when value of V[X] is equal to V[Y]",
+					register:         chip8.Register{0x5A, 0x5A},
+					expectedRegister: chip8.Register{0x5A, 0x5A},
+					pcExpected:       0x2,
+				},
+				{
+					context:          "when value of V[X] is different to NN",
+					register:         chip8.Register{0x5A, 0x4F},
+					expectedRegister: chip8.Register{0x5A, 0x4F},
+					pcExpected:       0x1,
+				},
+			},
+		},
+		{
 			describe: "instruction 0x6XNN",
 			instr:    chip8.Instruction{0x61, 0x50},
 			contexts: []cpuTestCaseContext{
