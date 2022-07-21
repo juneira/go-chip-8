@@ -423,6 +423,19 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xFX18",
+			instr:    chip8.Instruction{0xF1, 0x18},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when DT is different to V[X]",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					stExpected:       0xBB,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xFX1E",
 			instr:    chip8.Instruction{0xF0, 0x1E},
 			contexts: []cpuTestCaseContext{
