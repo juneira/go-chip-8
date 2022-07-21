@@ -11,13 +11,18 @@ import (
 
 func TestCpu_Log(t *testing.T) {
 	expectedRegister := chip8.Register{0x02, 0xB3, 0xAA, 0xFF, 0x00, 0xF0, 0xBC}
+	expectedStack := chip8.Stack{0x02, 0xB3, 0xAA, 0xFF, 0x00, 0xF0, 0xBC}
+	iExpected := uint16(0x2)
+	pcExpected := uint16(0x5)
+	spExpected := byte(0x5)
+
 	output := &bytes.Buffer{}
-	cpu := chip8.NewCpu(expectedRegister, output, 0x0)
+	cpu := chip8.NewCpu(expectedRegister, expectedStack, output, pcExpected, iExpected, spExpected)
 
 	cpu.Log()
 
 	result := output.Bytes()
-	expected := cpuToStr(0x0, 0x0, expectedRegister)
+	expected := cpuToStr(pcExpected, iExpected, expectedRegister, expectedStack, spExpected)
 
 	if string(result) != string(expected) {
 		t.Errorf("result: %s, expected: %s", result, expected)
@@ -33,7 +38,10 @@ type cpuTestCase struct {
 type cpuTestCaseContext struct {
 	context          string
 	register         chip8.Register
+	stack            chip8.Stack
 	expectedRegister chip8.Register
+	expectedStack    chip8.Stack
+	spExpected       byte
 	pcExpected       uint16
 	iExpected        uint16
 	flag             bool
@@ -390,7 +398,7 @@ func TestCpu_Process(t *testing.T) {
 			for _, context := range test.contexts {
 				t.Run(context.context, func(t *testing.T) {
 					output := &bytes.Buffer{}
-					cpu := chip8.NewCpu(context.register, output, 0x0)
+					cpu := chip8.NewCpu(context.register, context.stack, output, 0x0, 0x0, 0x0)
 
 					err := cpu.Process(test.instr)
 					if err != nil {
@@ -400,7 +408,8 @@ func TestCpu_Process(t *testing.T) {
 					cpu.Log()
 
 					result := output.Bytes()
-					expected := cpuToStr(context.pcExpected, context.iExpected, context.expectedRegister)
+					expected := cpuToStr(context.pcExpected, context.iExpected, context.expectedRegister,
+						context.expectedStack, context.spExpected)
 
 					if string(result) != string(expected) {
 						t.Errorf("result: %s, expected: %s", result, expected)
@@ -421,11 +430,11 @@ func setFlags(tests []cpuTestCase) {
 	}
 }
 
-func cpuToStr(pcExpected, iExpected uint16, registers chip8.Register) []byte {
-	str := fmt.Sprintf("pc = %x\n", pcExpected)
-	str += fmt.Sprintf("i = %x\n", iExpected)
-	for i := 0; i < len(registers); i++ {
-		str += fmt.Sprintf("register[%d] = %x\n", i, registers[i])
+func cpuToStr(pc, i uint16, register chip8.Register, stack chip8.Stack, sp byte) []byte {
+	str := fmt.Sprintf("pc = %x\nsp = %x\ni = %x\nstack = %v\n", pc, sp, i, stack)
+
+	for i := 0; i < len(register); i++ {
+		str += fmt.Sprintf("register[%d] = %x\n", i, register[i])
 	}
 
 	return []byte(str)

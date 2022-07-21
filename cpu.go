@@ -7,29 +7,31 @@ import (
 )
 
 type Register [0x10]byte
+type Stack [0x10]uint16
 
 type Cpu struct {
 	register Register
+	stack    Stack
 	output   io.Writer
+	sp       byte
 	pc       uint16
 	i        uint16
 }
 
 // NewCpu is a function that receive a "output" as param and return a pointer to Cpu
-func NewCpu(register Register, output io.Writer, pc uint16) *Cpu {
-	return &Cpu{register: register, output: output, pc: pc}
+func NewCpu(register Register, stack Stack, output io.Writer, pc, i uint16, sp byte) *Cpu {
+	return &Cpu{register: register, stack: stack, output: output, pc: pc, i: i, sp: sp}
 }
 
 // Log is a function that write values of registers to "output" of Cpu
 func (c *Cpu) Log() {
-	str := fmt.Sprintf("pc = %x\n", c.pc)
-	str += fmt.Sprintf("i = %x\n", c.i)
-	c.output.Write([]byte(str))
+	str := fmt.Sprintf("pc = %x\nsp = %x\ni = %x\nstack = %v\n", c.pc, c.sp, c.i, c.stack)
 
 	for i := 0; i < len(c.register); i++ {
-		str := fmt.Sprintf("register[%d] = %x\n", i, c.register[i])
-		c.output.Write([]byte(str))
+		str += fmt.Sprintf("register[%d] = %x\n", i, c.register[i])
 	}
+
+	c.output.Write([]byte(str))
 }
 
 // Process is a function that process a instruction
