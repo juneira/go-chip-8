@@ -70,6 +70,11 @@ func (c *Cpu) handle(instr Instruction) error {
 	}
 
 	switch instrType {
+	case InstructionType(0x00):
+		switch nn {
+		case 0xEE:
+			c.process0x00EE()
+		}
 	case InstructionType(0x01):
 		c.process0x1NNN(nnn)
 	case InstructionType(0x02):
@@ -127,6 +132,11 @@ func (c *Cpu) handle(instr Instruction) error {
 	}
 
 	return nil
+}
+
+func (c *Cpu) process0x00EE() {
+	c.sp--
+	c.pc = c.stack[c.sp]
 }
 
 func (c *Cpu) process0x1NNN(nnn uint16) {

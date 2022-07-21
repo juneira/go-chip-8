@@ -39,6 +39,7 @@ type cpuTestCaseContext struct {
 	context          string
 	register         chip8.Register
 	stack            chip8.Stack
+	sp               byte
 	expectedRegister chip8.Register
 	expectedStack    chip8.Stack
 	spExpected       byte
@@ -49,6 +50,22 @@ type cpuTestCaseContext struct {
 
 func TestCpu_Process(t *testing.T) {
 	tests := []cpuTestCase{
+		{
+			describe: "instruction 0x00EE",
+			instr:    chip8.Instruction{0x00, 0xEE},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when SP is one",
+					register:         chip8.Register{},
+					stack:            chip8.Stack{0xFF},
+					expectedRegister: chip8.Register{},
+					expectedStack:    chip8.Stack{0xFF},
+					sp:               0x1,
+					spExpected:       0x0,
+					pcExpected:       0xFF,
+				},
+			},
+		},
 		{
 			describe: "instruction 0x1NNN",
 			instr:    chip8.Instruction{0x1F, 0x5A},
@@ -412,7 +429,7 @@ func TestCpu_Process(t *testing.T) {
 			for _, context := range test.contexts {
 				t.Run(context.context, func(t *testing.T) {
 					output := &bytes.Buffer{}
-					cpu := chip8.NewCpu(context.register, context.stack, output, 0x0, 0x0, 0x0)
+					cpu := chip8.NewCpu(context.register, context.stack, output, 0x0, 0x0, context.sp)
 
 					err := cpu.Process(test.instr)
 					if err != nil {
