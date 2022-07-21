@@ -66,7 +66,7 @@ func TestCpu_Process(t *testing.T) {
 			instr:    chip8.Instruction{0x2F, 0x90},
 			contexts: []cpuTestCaseContext{
 				{
-					context:          "when PC has different value of NNN",
+					context:          "when SP is zero",
 					register:         chip8.Register{},
 					expectedRegister: chip8.Register{},
 					expectedStack:    chip8.Stack{0x01},
