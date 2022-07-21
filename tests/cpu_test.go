@@ -410,6 +410,19 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xFX15",
+			instr:    chip8.Instruction{0xF1, 0x15},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when DT is different to V[X]",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					dtExpected:       0xBB,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xFX1E",
 			instr:    chip8.Instruction{0xF0, 0x1E},
 			contexts: []cpuTestCaseContext{
@@ -460,7 +473,7 @@ func setFlags(tests []cpuTestCase) {
 	for i, test := range tests {
 		for j, context := range test.contexts {
 			if context.flag {
-				tests[i].contexts[j].expectedRegister[0xF] = 1
+				tests[i].contexts[j].expectedRegister[0xF] = 0x1
 			}
 		}
 	}
