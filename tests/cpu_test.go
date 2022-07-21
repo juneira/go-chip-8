@@ -62,6 +62,20 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0x2NNN",
+			instr:    chip8.Instruction{0x2F, 0x90},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when PC has different value of NNN",
+					register:         chip8.Register{},
+					expectedRegister: chip8.Register{},
+					expectedStack:    chip8.Stack{0x01},
+					pcExpected:       0xF90,
+					spExpected:       0x01,
+				},
+			},
+		},
+		{
 			describe: "instruction 0x3XNN",
 			instr:    chip8.Instruction{0x30, 0x5A},
 			contexts: []cpuTestCaseContext{

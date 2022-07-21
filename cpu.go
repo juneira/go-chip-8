@@ -72,6 +72,8 @@ func (c *Cpu) handle(instr Instruction) error {
 	switch instrType {
 	case InstructionType(0x01):
 		c.process0x1NNN(nnn)
+	case InstructionType(0x02):
+		c.process0x2NNN(nnn)
 	case InstructionType(0x03):
 		c.process0x3XNN(x, nn)
 	case InstructionType(0x04):
@@ -128,6 +130,12 @@ func (c *Cpu) handle(instr Instruction) error {
 }
 
 func (c *Cpu) process0x1NNN(nnn uint16) {
+	c.pc = nnn
+}
+
+func (c *Cpu) process0x2NNN(nnn uint16) {
+	c.stack[c.sp] = c.pc + 0x1
+	c.sp++
 	c.pc = nnn
 }
 
