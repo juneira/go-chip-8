@@ -128,6 +128,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		c.process0xCXNN(x, nn)
 	case InstructionType(0x0F):
 		switch nn {
+		case 0x07:
+			c.process0xFX07(x)
 		case 0x15:
 			c.process0xFX15(x)
 		case 0x18:
@@ -273,6 +275,11 @@ func (c *Cpu) process0xBNNN(nnn uint16) {
 
 func (c *Cpu) process0xCXNN(x, nn byte) {
 	c.register[x] = byte(rand.Intn(0xFF)) & nn
+	c.pc++
+}
+
+func (c *Cpu) process0xFX07(x byte) {
+	c.register[x] = c.dt
 	c.pc++
 }
 
