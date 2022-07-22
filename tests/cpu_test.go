@@ -18,13 +18,13 @@ func TestCpu_Log(t *testing.T) {
 	stExpected := byte(0x7)
 	spExpected := byte(0x5)
 
-	output := &bytes.Buffer{}
-	cpu := chip8.NewCpu(expectedRegister, expectedStack, output, pcExpected, iExpected, spExpected,
+	log := &bytes.Buffer{}
+	cpu := chip8.NewCpu(expectedRegister, expectedStack, log, pcExpected, iExpected, spExpected,
 		dtExpected, stExpected)
 
 	cpu.Log()
 
-	result := output.Bytes()
+	result := log.Bytes()
 	expected := cpuToStr(pcExpected, iExpected, expectedRegister, expectedStack, spExpected, dtExpected, stExpected)
 
 	if string(result) != string(expected) {
@@ -472,8 +472,8 @@ func TestCpu_Process(t *testing.T) {
 		t.Run(test.describe, func(t *testing.T) {
 			for _, context := range test.contexts {
 				t.Run(context.context, func(t *testing.T) {
-					output := &bytes.Buffer{}
-					cpu := chip8.NewCpu(context.register, context.stack, output, 0x0, 0x0, context.sp, 0x0, 0x0)
+					log := &bytes.Buffer{}
+					cpu := chip8.NewCpu(context.register, context.stack, log, 0x0, 0x0, context.sp, 0x0, 0x0)
 
 					err := cpu.Process(test.instr)
 					if err != nil {
@@ -482,7 +482,7 @@ func TestCpu_Process(t *testing.T) {
 
 					cpu.Log()
 
-					result := output.Bytes()
+					result := log.Bytes()
 					expected := cpuToStr(context.pcExpected, context.iExpected, context.expectedRegister,
 						context.expectedStack, context.spExpected, context.dtExpected, context.stExpected)
 
