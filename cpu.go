@@ -158,6 +158,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		switch nn {
 		case 0x9E:
 			c.process0xEX9E(x)
+		case 0xA1:
+			c.process0xEXA1(x)
 		}
 	case InstructionType(0x0F):
 		switch nn {
@@ -313,6 +315,14 @@ func (c *Cpu) process0xCXNN(x, nn byte) {
 
 func (c *Cpu) process0xEX9E(x byte) {
 	if Key(c.register[x]) != c.keyboard.KeyDown() {
+		c.pc++
+		return
+	}
+	c.pc += 2
+}
+
+func (c *Cpu) process0xEXA1(x byte) {
+	if Key(c.register[x]) == c.keyboard.KeyDown() {
 		c.pc++
 		return
 	}

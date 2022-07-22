@@ -440,6 +440,26 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xEXA1",
+			instr:    chip8.Instruction{0xE1, 0xA1},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when key pressed is different the V[X]",
+					register:         chip8.Register{0xFA, 0x0A},
+					expectedRegister: chip8.Register{0xFA, 0x0A},
+					keyPressed:       0x05,
+					pcExpected:       0x2,
+				},
+				{
+					context:          "when key pressed is equals the V[X]",
+					register:         chip8.Register{0xFA, 0x0A},
+					expectedRegister: chip8.Register{0xFA, 0x0A},
+					keyPressed:       0x0A,
+					pcExpected:       0x1,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xFX07",
 			instr:    chip8.Instruction{0xF1, 0x07},
 			contexts: []cpuTestCaseContext{
