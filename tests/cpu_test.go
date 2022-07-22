@@ -51,6 +51,7 @@ type cpuTestCaseContext struct {
 	context          string
 	register         chip8.Register
 	stack            chip8.Stack
+	keyPressed       chip8.Key
 	sp               byte
 	expectedRegister chip8.Register
 	expectedStack    chip8.Stack
@@ -419,6 +420,26 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xEX9E",
+			instr:    chip8.Instruction{0xE1, 0x9E},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when key pressed is different the V[X]",
+					register:         chip8.Register{0xFA, 0x0A},
+					expectedRegister: chip8.Register{0xFA, 0x0A},
+					keyPressed:       0x05,
+					pcExpected:       0x1,
+				},
+				{
+					context:          "when key pressed is equals the V[X]",
+					register:         chip8.Register{0xFA, 0x0A},
+					expectedRegister: chip8.Register{0xFA, 0x0A},
+					keyPressed:       0x0A,
+					pcExpected:       0x2,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xFX07",
 			instr:    chip8.Instruction{0xF1, 0x07},
 			contexts: []cpuTestCaseContext{
@@ -484,7 +505,7 @@ func TestCpu_Process(t *testing.T) {
 					log := &bytes.Buffer{}
 
 					cpu := chip8.NewCpu(&chip8.ConfigCpu{
-						Keyboard: nil,
+						Keyboard: MockKeyBoard{Key: context.keyPressed},
 						Stack:    context.stack,
 						Log:      log,
 						Register: context.register,
@@ -533,4 +554,12 @@ func cpuToStr(pc, i uint16, register chip8.Register, stack chip8.Stack, sp, dt, 
 	}
 
 	return []byte(str)
+}
+
+type MockKeyBoard struct {
+	Key chip8.Key
+}
+
+func (m MockKeyBoard) KeyDown() chip8.Key {
+	return m.Key
 }

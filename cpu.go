@@ -154,6 +154,11 @@ func (c *Cpu) handle(instr Instruction) error {
 		c.process0xBNNN(nnn)
 	case InstructionType(0x0C):
 		c.process0xCXNN(x, nn)
+	case InstructionType(0x0E):
+		switch nn {
+		case 0x9E:
+			c.process0xEX9E(x)
+		}
 	case InstructionType(0x0F):
 		switch nn {
 		case 0x07:
@@ -304,6 +309,14 @@ func (c *Cpu) process0xBNNN(nnn uint16) {
 func (c *Cpu) process0xCXNN(x, nn byte) {
 	c.register[x] = byte(rand.Intn(0xFF)) & nn
 	c.pc++
+}
+
+func (c *Cpu) process0xEX9E(x byte) {
+	if Key(c.register[x]) != c.keyboard.KeyDown() {
+		c.pc++
+		return
+	}
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX07(x byte) {
