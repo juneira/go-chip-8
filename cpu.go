@@ -10,6 +10,7 @@ type Register [0x10]byte
 type Stack [0x10]uint16
 
 type Cpu struct {
+	keyboard Keyboard
 	register Register
 	stack    Stack
 	log      io.Writer
@@ -20,9 +21,36 @@ type Cpu struct {
 	i        uint16
 }
 
+type ConfigCpu struct {
+	// Externals devices
+	Keyboard Keyboard
+	Stack    Stack
+	Log      io.Writer
+
+	// Registers
+	Register Register
+	I        uint16
+
+	// Pseudo Registers
+	PC uint16
+	SP byte
+	DT byte
+	ST byte
+}
+
 // NewCpu receives params and return a pointer to Cpu
-func NewCpu(register Register, stack Stack, log io.Writer, pc, i uint16, sp, dt, st byte) *Cpu {
-	return &Cpu{register: register, stack: stack, log: log, pc: pc, i: i, sp: sp, dt: dt, st: st}
+func NewCpu(config *ConfigCpu) *Cpu {
+	return &Cpu{
+		keyboard: config.Keyboard,
+		register: config.Register,
+		stack:    config.Stack,
+		log:      config.Log,
+		pc:       config.PC,
+		i:        config.I,
+		sp:       config.SP,
+		dt:       config.DT,
+		st:       config.ST,
+	}
 }
 
 // Log writes values of registers to "log" of Cpu

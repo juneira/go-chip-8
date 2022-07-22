@@ -19,8 +19,17 @@ func TestCpu_Log(t *testing.T) {
 	spExpected := byte(0x5)
 
 	log := &bytes.Buffer{}
-	cpu := chip8.NewCpu(expectedRegister, expectedStack, log, pcExpected, iExpected, spExpected,
-		dtExpected, stExpected)
+	cpu := chip8.NewCpu(&chip8.ConfigCpu{
+		Keyboard: nil,
+		Stack:    expectedStack,
+		Log:      log,
+		Register: expectedRegister,
+		I:        iExpected,
+		PC:       pcExpected,
+		SP:       spExpected,
+		DT:       dtExpected,
+		ST:       stExpected,
+	})
 
 	cpu.Log()
 
@@ -473,7 +482,18 @@ func TestCpu_Process(t *testing.T) {
 			for _, context := range test.contexts {
 				t.Run(context.context, func(t *testing.T) {
 					log := &bytes.Buffer{}
-					cpu := chip8.NewCpu(context.register, context.stack, log, 0x0, 0x0, context.sp, 0x0, 0x0)
+
+					cpu := chip8.NewCpu(&chip8.ConfigCpu{
+						Keyboard: nil,
+						Stack:    context.stack,
+						Log:      log,
+						Register: context.register,
+						I:        0x0,
+						PC:       0x0,
+						SP:       context.sp,
+						DT:       0x0,
+						ST:       0x0,
+					})
 
 					err := cpu.Process(test.instr)
 					if err != nil {
