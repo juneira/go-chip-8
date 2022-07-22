@@ -165,6 +165,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		switch nn {
 		case 0x07:
 			c.process0xFX07(x)
+		case 0x0A:
+			c.process0xFX0A(x)
 		case 0x15:
 			c.process0xFX15(x)
 		case 0x18:
@@ -332,6 +334,16 @@ func (c *Cpu) process0xEXA1(x byte) {
 func (c *Cpu) process0xFX07(x byte) {
 	c.register[x] = c.dt
 	c.pc++
+}
+
+func (c *Cpu) process0xFX0A(x byte) {
+	// Wait for the key press
+	key := c.keyboard.KeyDown()
+	for key == Key(0xFF) {
+		key = c.keyboard.KeyDown()
+	}
+
+	c.register[x] = byte(key)
 }
 
 func (c *Cpu) process0xFX15(x byte) {
