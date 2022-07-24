@@ -11,6 +11,7 @@ type Stack [0x10]uint16
 
 type Cpu struct {
 	keyboard Keyboard
+	memory   Memory
 	register Register
 	stack    Stack
 	log      io.Writer
@@ -24,6 +25,7 @@ type Cpu struct {
 type ConfigCpu struct {
 	// Externals devices
 	Keyboard Keyboard
+	Memory   Memory
 	Stack    Stack
 	Log      io.Writer
 
@@ -42,6 +44,7 @@ type ConfigCpu struct {
 func NewCpu(config *ConfigCpu) *Cpu {
 	return &Cpu{
 		keyboard: config.Keyboard,
+		memory:   config.Memory,
 		register: config.Register,
 		stack:    config.Stack,
 		log:      config.Log,
@@ -344,6 +347,7 @@ func (c *Cpu) process0xFX0A(x byte) {
 	}
 
 	c.register[x] = byte(key)
+	c.pc++
 }
 
 func (c *Cpu) process0xFX15(x byte) {

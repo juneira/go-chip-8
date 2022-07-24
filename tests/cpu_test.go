@@ -61,6 +61,9 @@ type cpuTestCaseContext struct {
 	pcExpected       uint16
 	iExpected        uint16
 	flag             bool
+	saveCount        int
+	loadCount        int
+	loadCharCount    int
 }
 
 func TestCpu_Process(t *testing.T) {
@@ -538,8 +541,10 @@ func TestCpu_Process(t *testing.T) {
 				t.Run(context.context, func(t *testing.T) {
 					log := &bytes.Buffer{}
 
+					memory := MockMemory{}
 					cpu := chip8.NewCpu(&chip8.ConfigCpu{
 						Keyboard: MockKeyBoard{Key: context.keyPressed},
+						Memory:   memory,
 						Stack:    context.stack,
 						Log:      log,
 						Register: context.register,
@@ -563,6 +568,18 @@ func TestCpu_Process(t *testing.T) {
 
 					if string(result) != string(expected) {
 						t.Errorf("result: %s, expected: %s", result, expected)
+					}
+
+					if memory.saveCount != context.saveCount {
+						t.Errorf("[memory saveCount] result: %d, expected: %d", memory.saveCount, context.saveCount)
+					}
+
+					if memory.loadCount != context.loadCount {
+						t.Errorf("[memory loadCount] result: %d, expected: %d", memory.loadCount, context.loadCount)
+					}
+
+					if memory.loadCharCount != context.loadCharCount {
+						t.Errorf("[memory loadCharCount] result: %d, expected: %d", memory.loadCharCount, context.loadCharCount)
 					}
 				})
 			}
@@ -594,6 +611,25 @@ type MockKeyBoard struct {
 	Key chip8.Key
 }
 
-func (m MockKeyBoard) KeyDown() chip8.Key {
-	return m.Key
+func (mk MockKeyBoard) KeyDown() chip8.Key {
+	return mk.Key
+}
+
+type MockMemory struct {
+	saveCount     int
+	loadCount     int
+	loadCharCount int
+}
+
+func (mm MockMemory) Save(register []chip8.Register, i uint16) {
+	mm.saveCount++
+}
+
+func (mm MockMemory) Load(register []chip8.Register, i uint16) {
+	mm.loadCount++
+}
+
+func (mm MockMemory) LoadChar(vx byte) uint16 {
+	mm.loadCharCount++
+	return uint16(vx) + 0xF
 }
