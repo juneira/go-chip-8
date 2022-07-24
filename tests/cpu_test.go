@@ -62,6 +62,7 @@ type cpuTestCaseContext struct {
 	iExpected        uint16
 	flag             bool
 	saveCount        int
+	saveBCDCount     int
 	loadCount        int
 	loadCharCount    int
 }
@@ -543,6 +544,19 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xFX33",
+			instr:    chip8.Instruction{0xF0, 0x33},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "calls SaveBCD on Memory",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					saveBCDCount:     1,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xFX55",
 			instr:    chip8.Instruction{0xF0, 0x55},
 			contexts: []cpuTestCaseContext{
@@ -614,6 +628,10 @@ func TestCpu_Process(t *testing.T) {
 						t.Errorf("[memory saveCount] result: %d, expected: %d", memory.saveCount, context.saveCount)
 					}
 
+					if memory.saveBCDCount != context.saveBCDCount {
+						t.Errorf("[memory saveBCDCount] result: %d, expected: %d", memory.saveBCDCount, context.saveBCDCount)
+					}
+
 					if memory.loadCount != context.loadCount {
 						t.Errorf("[memory loadCount] result: %d, expected: %d", memory.loadCount, context.loadCount)
 					}
@@ -657,12 +675,17 @@ func (mk MockKeyBoard) KeyDown() chip8.Key {
 
 type MockMemory struct {
 	saveCount     int
+	saveBCDCount  int
 	loadCount     int
 	loadCharCount int
 }
 
 func (mm *MockMemory) Save(register []byte, i uint16) {
 	mm.saveCount++
+}
+
+func (mm *MockMemory) SaveBCD(vx byte, i uint16) {
+	mm.saveBCDCount++
 }
 
 func (mm *MockMemory) Load(register []byte, i uint16) {
