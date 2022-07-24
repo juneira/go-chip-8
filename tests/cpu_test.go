@@ -529,6 +529,20 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xFX29",
+			instr:    chip8.Instruction{0xF0, 0x29},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "calls LoadChar on Memory",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					loadCharCount:    1,
+					iExpected:        0xFC,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xFX55",
 			instr:    chip8.Instruction{0xF0, 0x55},
 			contexts: []cpuTestCaseContext{
@@ -657,5 +671,5 @@ func (mm *MockMemory) Load(register []byte, i uint16) {
 
 func (mm *MockMemory) LoadChar(vx byte) uint16 {
 	mm.loadCharCount++
-	return uint16(vx) + 0xF
+	return uint16(vx) + 0x2
 }
