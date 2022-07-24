@@ -528,6 +528,19 @@ func TestCpu_Process(t *testing.T) {
 				},
 			},
 		},
+		{
+			describe: "instruction 0xFX55",
+			instr:    chip8.Instruction{0xF0, 0x55},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "calls Save on Memory",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					saveCount:        1,
+				},
+			},
+		},
 	}
 
 	rand.Seed(51153153)
@@ -544,7 +557,7 @@ func TestCpu_Process(t *testing.T) {
 					memory := MockMemory{}
 					cpu := chip8.NewCpu(&chip8.ConfigCpu{
 						Keyboard: MockKeyBoard{Key: context.keyPressed},
-						Memory:   memory,
+						Memory:   &memory,
 						Stack:    context.stack,
 						Log:      log,
 						Register: context.register,
@@ -621,15 +634,15 @@ type MockMemory struct {
 	loadCharCount int
 }
 
-func (mm MockMemory) Save(register []chip8.Register, i uint16) {
+func (mm *MockMemory) Save(register []byte, i uint16) {
 	mm.saveCount++
 }
 
-func (mm MockMemory) Load(register []chip8.Register, i uint16) {
+func (mm *MockMemory) Load(register []byte, i uint16) {
 	mm.loadCount++
 }
 
-func (mm MockMemory) LoadChar(vx byte) uint16 {
+func (mm *MockMemory) LoadChar(vx byte) uint16 {
 	mm.loadCharCount++
 	return uint16(vx) + 0xF
 }
