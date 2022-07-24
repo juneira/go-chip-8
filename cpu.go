@@ -10,6 +10,7 @@ type Register [0x10]byte
 type Stack [0x10]uint16
 
 type Cpu struct {
+	display  Display
 	keyboard Keyboard
 	memory   Memory
 	register Register
@@ -24,6 +25,7 @@ type Cpu struct {
 
 type ConfigCpu struct {
 	// Externals devices
+	Display  Display
 	Keyboard Keyboard
 	Memory   Memory
 	Stack    Stack
@@ -43,6 +45,7 @@ type ConfigCpu struct {
 // NewCpu receives params and return a pointer to Cpu
 func NewCpu(config *ConfigCpu) *Cpu {
 	return &Cpu{
+		display:  config.Display,
 		keyboard: config.Keyboard,
 		memory:   config.Memory,
 		register: config.Register,
@@ -105,6 +108,8 @@ func (c *Cpu) handle(instr Instruction) error {
 	switch instrType {
 	case InstructionType(0x00):
 		switch nn {
+		case 0xE0:
+			c.process0x00E0()
 		case 0xEE:
 			c.process0x00EE()
 		}
@@ -188,6 +193,11 @@ func (c *Cpu) handle(instr Instruction) error {
 	}
 
 	return nil
+}
+
+func (c *Cpu) process0x00E0() {
+	c.display.Clear()
+	c.pc++
 }
 
 func (c *Cpu) process0x00EE() {

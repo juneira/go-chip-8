@@ -65,10 +65,23 @@ type cpuTestCaseContext struct {
 	saveBCDCount     int
 	loadCount        int
 	loadCharCount    int
+	clearCount       int
 }
 
 func TestCpu_Process(t *testing.T) {
 	tests := []cpuTestCase{
+		{
+			describe: "instruction 0x00E0",
+			instr:    chip8.Instruction{0x00, 0xE0},
+			contexts: []cpuTestCaseContext{
+				{
+					context:    "classs Clear on Display",
+					register:   chip8.Register{},
+					pcExpected: 0x1,
+					clearCount: 1,
+				},
+			},
+		},
 		{
 			describe: "instruction 0x00EE",
 			instr:    chip8.Instruction{0x00, 0xEE},
@@ -593,11 +606,14 @@ func TestCpu_Process(t *testing.T) {
 		t.Run(test.describe, func(t *testing.T) {
 			for _, context := range test.contexts {
 				t.Run(context.context, func(t *testing.T) {
+					display := MockDisplay{}
+					keyboard := MockKeyBoard{Key: context.keyPressed}
+					memory := MockMemory{}
 					log := &bytes.Buffer{}
 
-					memory := MockMemory{}
 					cpu := chip8.NewCpu(&chip8.ConfigCpu{
-						Keyboard: MockKeyBoard{Key: context.keyPressed},
+						Display:  &display,
+						Keyboard: keyboard,
 						Memory:   &memory,
 						Stack:    context.stack,
 						Log:      log,
@@ -624,24 +640,39 @@ func TestCpu_Process(t *testing.T) {
 						t.Errorf("result: %s, expected: %s", result, expected)
 					}
 
-					if memory.saveCount != context.saveCount {
-						t.Errorf("[memory saveCount] result: %d, expected: %d", memory.saveCount, context.saveCount)
-					}
-
-					if memory.saveBCDCount != context.saveBCDCount {
-						t.Errorf("[memory saveBCDCount] result: %d, expected: %d", memory.saveBCDCount, context.saveBCDCount)
-					}
-
-					if memory.loadCount != context.loadCount {
-						t.Errorf("[memory loadCount] result: %d, expected: %d", memory.loadCount, context.loadCount)
-					}
-
-					if memory.loadCharCount != context.loadCharCount {
-						t.Errorf("[memory loadCharCount] result: %d, expected: %d", memory.loadCharCount, context.loadCharCount)
-					}
+					checkDisplay(t, display, context)
+					checkMemory(t, memory, context)
 				})
 			}
 		})
+	}
+}
+
+func checkDisplay(t *testing.T, display MockDisplay, context cpuTestCaseContext) {
+	t.Helper()
+
+	if display.clearCount != context.clearCount {
+		t.Errorf("[display clearCount] result: %d, expected: %d", display.clearCount, context.clearCount)
+	}
+}
+
+func checkMemory(t *testing.T, memory MockMemory, context cpuTestCaseContext) {
+	t.Helper()
+
+	if memory.saveCount != context.saveCount {
+		t.Errorf("[memory saveCount] result: %d, expected: %d", memory.saveCount, context.saveCount)
+	}
+
+	if memory.saveBCDCount != context.saveBCDCount {
+		t.Errorf("[memory saveBCDCount] result: %d, expected: %d", memory.saveBCDCount, context.saveBCDCount)
+	}
+
+	if memory.loadCount != context.loadCount {
+		t.Errorf("[memory loadCount] result: %d, expected: %d", memory.loadCount, context.loadCount)
+	}
+
+	if memory.loadCharCount != context.loadCharCount {
+		t.Errorf("[memory loadCharCount] result: %d, expected: %d", memory.loadCharCount, context.loadCharCount)
 	}
 }
 
@@ -663,6 +694,16 @@ func cpuToStr(pc, i uint16, register chip8.Register, stack chip8.Stack, sp, dt, 
 	}
 
 	return []byte(str)
+}
+
+type MockDisplay struct {
+	clearCount int
+}
+
+func (md *MockDisplay) Clear() {
+	md.clearCount++
+
+	fmt.Println("Aquiii:", md.clearCount)
 }
 
 type MockKeyBoard struct {
