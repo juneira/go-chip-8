@@ -178,6 +178,8 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0xFX1E(x)
 		case 0x55:
 			c.process0xFX55(x)
+		case 0x65:
+			c.process0xFX65(x)
 		}
 	}
 
@@ -369,5 +371,10 @@ func (c *Cpu) process0xFX1E(x byte) {
 
 func (c *Cpu) process0xFX55(x byte) {
 	c.memory.Save(c.register[0:x], c.i)
+	c.pc++
+}
+
+func (c *Cpu) process0xFX65(x byte) {
+	c.memory.Load(c.register[0:x], c.i)
 	c.pc++
 }

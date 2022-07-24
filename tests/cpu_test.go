@@ -541,6 +541,19 @@ func TestCpu_Process(t *testing.T) {
 				},
 			},
 		},
+		{
+			describe: "instruction 0xFX65",
+			instr:    chip8.Instruction{0xF0, 0x65},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "calls Load on Memory",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					pcExpected:       0x1,
+					loadCount:        1,
+				},
+			},
+		},
 	}
 
 	rand.Seed(51153153)
