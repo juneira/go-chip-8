@@ -756,6 +756,8 @@ func (mm *MockMemory) Load(register []byte, i uint16) {
 	mm.loadCount++
 }
 
+func (mm *MockMemory) LoadInstruction(pc uint16) chip8.Instruction
+
 func (mm *MockMemory) LoadChar(vx byte) uint16 {
 	mm.loadCharCount++
 	return uint16(vx) + 0x2

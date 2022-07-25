@@ -17,6 +17,11 @@ type Memory interface {
 	Load(register []byte, i uint16)
 
 	/*
+		LoadInstruction should loads the instruction (2 bytes) of program
+	*/
+	LoadInstruction(pc uint16) Instruction
+
+	/*
 		LoadChar should return the address of char referring to vx
 	*/
 	LoadChar(vx byte) uint16
