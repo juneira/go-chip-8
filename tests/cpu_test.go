@@ -66,6 +66,7 @@ type cpuTestCaseContext struct {
 	loadCount        int
 	loadCharCount    int
 	clearCount       int
+	drawCount        int
 }
 
 func TestCpu_Process(t *testing.T) {
@@ -437,6 +438,19 @@ func TestCpu_Process(t *testing.T) {
 			},
 		},
 		{
+			describe: "instruction 0xDXYN",
+			instr:    chip8.Instruction{0xD0, 0x15},
+			contexts: []cpuTestCaseContext{
+				{
+					context:          "when N is 5",
+					register:         chip8.Register{0xFA, 0xBB},
+					expectedRegister: chip8.Register{0xFA, 0xBB},
+					drawCount:        5,
+					pcExpected:       0x1,
+				},
+			},
+		},
+		{
 			describe: "instruction 0xEX9E",
 			instr:    chip8.Instruction{0xE1, 0x9E},
 			contexts: []cpuTestCaseContext{
@@ -654,6 +668,10 @@ func checkDisplay(t *testing.T, display MockDisplay, context cpuTestCaseContext)
 	if display.clearCount != context.clearCount {
 		t.Errorf("[display clearCount] result: %d, expected: %d", display.clearCount, context.clearCount)
 	}
+
+	if display.drawCount != context.drawCount {
+		t.Errorf("[display drawCount] result: %d, expected: %d", display.drawCount, context.drawCount)
+	}
 }
 
 func checkMemory(t *testing.T, memory MockMemory, context cpuTestCaseContext) {
@@ -698,12 +716,17 @@ func cpuToStr(pc, i uint16, register chip8.Register, stack chip8.Stack, sp, dt, 
 
 type MockDisplay struct {
 	clearCount int
+	drawCount  int
 }
 
 func (md *MockDisplay) Clear() {
 	md.clearCount++
+}
 
-	fmt.Println("Aquiii:", md.clearCount)
+func (md *MockDisplay) Draw(xDisplay, yDisplay, sprite byte) bool {
+	md.drawCount++
+
+	return false
 }
 
 type MockKeyBoard struct {
@@ -736,4 +759,8 @@ func (mm *MockMemory) Load(register []byte, i uint16) {
 func (mm *MockMemory) LoadChar(vx byte) uint16 {
 	mm.loadCharCount++
 	return uint16(vx) + 0x2
+}
+
+func (mm *MockMemory) LoadSprite(i uint16) byte {
+	return 0x00
 }

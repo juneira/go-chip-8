@@ -20,4 +20,9 @@ type Memory interface {
 		LoadChar should return the address of char referring to vx
 	*/
 	LoadChar(vx byte) uint16
+
+	/*
+		LoadSprite should return the Sprite on I
+	*/
+	LoadSprite(i uint16) byte
 }

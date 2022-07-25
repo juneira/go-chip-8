@@ -90,6 +90,11 @@ func (c *Cpu) handle(instr Instruction) error {
 		return err
 	}
 
+	n, err := instr.GetN()
+	if err != nil {
+		return err
+	}
+
 	nn, err := instr.GetNN()
 	if err != nil {
 		return err
@@ -162,6 +167,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		c.process0xBNNN(nnn)
 	case InstructionType(0x0C):
 		c.process0xCXNN(x, nn)
+	case InstructionType(0x0D):
+		c.process0xDXYN(x, y, n)
 	case InstructionType(0x0E):
 		switch nn {
 		case 0x9E:
@@ -333,6 +340,22 @@ func (c *Cpu) process0xBNNN(nnn uint16) {
 
 func (c *Cpu) process0xCXNN(x, nn byte) {
 	c.register[x] = byte(rand.Intn(0xFF)) & nn
+	c.pc++
+}
+
+func (c *Cpu) process0xDXYN(x, y, n byte) {
+	xDisplay, yDisplay := c.register[x], c.register[y]
+	colission := false
+	for i := 0; i < int(n); i++ {
+		sprite := c.memory.LoadSprite(c.i + uint16(i*8))
+		colission = colission || c.display.Draw(xDisplay, yDisplay+byte(i), sprite)
+	}
+
+	c.register[0xF] = 0
+	if colission {
+		c.register[0xF] = 1
+	}
+
 	c.pc++
 }
 
