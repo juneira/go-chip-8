@@ -14,7 +14,15 @@ func NewRom(data io.Reader) *Rom {
 // NextInstruction return the next instruction
 func (r *Rom) NextInstruction() *Instruction {
 	instr := make(Instruction, 2)
-	r.data.Read(instr)
+	n, err := r.data.Read(instr)
+
+	if n == 0 {
+		return nil
+	}
+
+	if err != nil {
+		panic(err)
+	}
 
 	return &instr
 }
