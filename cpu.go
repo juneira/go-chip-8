@@ -204,7 +204,7 @@ func (c *Cpu) handle(instr Instruction) error {
 
 func (c *Cpu) process0x00E0() {
 	c.display.Clear()
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x00EE() {
@@ -224,56 +224,56 @@ func (c *Cpu) process0x2NNN(nnn uint16) {
 
 func (c *Cpu) process0x3XNN(x, nn byte) {
 	if c.register[x] != nn {
-		c.pc++
+		c.pc += 2
 		return
 	}
-	c.pc += 2
+	c.pc += 4
 }
 
 func (c *Cpu) process0x4XNN(x, nn byte) {
 	if c.register[x] == nn {
-		c.pc++
+		c.pc += 2
 		return
 	}
-	c.pc += 2
+	c.pc += 4
 }
 
 func (c *Cpu) process0x5XY0(x, y byte) {
 	if c.register[x] != c.register[y] {
-		c.pc++
+		c.pc += 2
 		return
 	}
-	c.pc += 2
+	c.pc += 4
 }
 
 func (c *Cpu) process0x6XNN(x, nn byte) {
 	c.register[x] = nn
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x7XNN(x, nn byte) {
 	c.register[x] += nn
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY0(x, y byte) {
 	c.register[x] = c.register[y]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY1(x, y byte) {
 	c.register[x] |= c.register[y]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY2(x, y byte) {
 	c.register[x] &= c.register[y]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY3(x, y byte) {
 	c.register[x] ^= c.register[y]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY4(x, y byte) {
@@ -284,7 +284,7 @@ func (c *Cpu) process0x8XY4(x, y byte) {
 	}
 
 	c.register[x] = val
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY5(x, y byte) {
@@ -295,13 +295,13 @@ func (c *Cpu) process0x8XY5(x, y byte) {
 	}
 
 	c.register[x] = val
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY6(x, y byte) {
 	c.register[0xF] = c.register[x] % 2
 	c.register[x] >>= c.register[y]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XY7(x, y byte) {
@@ -312,26 +312,26 @@ func (c *Cpu) process0x8XY7(x, y byte) {
 	}
 
 	c.register[x] = val
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x8XYE(x, y byte) {
 	c.register[0xF] = (c.register[x] >> 7)
 	c.register[x] <<= c.register[y]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0x9XY0(x, y byte) {
 	if c.register[x] == c.register[y] {
-		c.pc++
+		c.pc += 2
 		return
 	}
-	c.pc += 2
+	c.pc += 4
 }
 
 func (c *Cpu) process0xANNN(nnn uint16) {
 	c.i = nnn
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xBNNN(nnn uint16) {
@@ -340,7 +340,7 @@ func (c *Cpu) process0xBNNN(nnn uint16) {
 
 func (c *Cpu) process0xCXNN(x, nn byte) {
 	c.register[x] = byte(rand.Intn(0xFF)) & nn
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xDXYN(x, y, n byte) {
@@ -356,28 +356,28 @@ func (c *Cpu) process0xDXYN(x, y, n byte) {
 		c.register[0xF] = 1
 	}
 
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xEX9E(x byte) {
 	if Key(c.register[x]) != c.keyboard.KeyDown() {
-		c.pc++
+		c.pc += 2
 		return
 	}
-	c.pc += 2
+	c.pc += 4
 }
 
 func (c *Cpu) process0xEXA1(x byte) {
 	if Key(c.register[x]) == c.keyboard.KeyDown() {
-		c.pc++
+		c.pc += 2
 		return
 	}
-	c.pc += 2
+	c.pc += 4
 }
 
 func (c *Cpu) process0xFX07(x byte) {
 	c.register[x] = c.dt
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX0A(x byte) {
@@ -388,40 +388,40 @@ func (c *Cpu) process0xFX0A(x byte) {
 	}
 
 	c.register[x] = byte(key)
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX15(x byte) {
 	c.dt = c.register[x]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX18(x byte) {
 	c.st = c.register[x]
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX1E(x byte) {
 	c.i += uint16(c.register[x])
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX29(x byte) {
 	c.i = c.memory.LoadChar(c.register[x])
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX33(x byte) {
 	c.memory.SaveBCD(c.register[x], c.i)
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX55(x byte) {
 	c.memory.Save(c.register[0:x], c.i)
-	c.pc++
+	c.pc += 2
 }
 
 func (c *Cpu) process0xFX65(x byte) {
 	c.memory.Load(c.register[0:x], c.i)
-	c.pc++
+	c.pc += 2
 }
