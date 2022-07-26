@@ -8,7 +8,7 @@ type Display interface {
 
 	/*
 		Draw should draw the byte on position xDisplay and yDisplay
-		If occourres colission returns true
+		If occourres collision returns true
 	*/
 	Draw(xDisplay, yDisplay, sprite byte) bool
 }

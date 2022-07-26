@@ -46,3 +46,21 @@ func (sd *StandardDisplay) Clear() {
 		}
 	}
 }
+
+// Draw draws a sprint on position xDisplay and yDisplay
+func (sd *StandardDisplay) Draw(xDisplay, yDisplay, sprite byte) bool {
+	collision := false
+
+	for bitIdx := byte(0); bitIdx < 8; bitIdx++ {
+		newPixel := (sprite & (1 << (7 - bitIdx))) >> (7 - bitIdx)
+		oldPixel := sd.screen[yDisplay][xDisplay+bitIdx]
+
+		if newPixel != 0 && oldPixel != 0 {
+			collision = true
+		}
+
+		sd.screen[yDisplay][xDisplay+bitIdx] = newPixel ^ oldPixel
+	}
+
+	return collision
+}
