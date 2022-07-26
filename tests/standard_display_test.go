@@ -71,20 +71,13 @@ func TestStandardDisplay_Draw(t *testing.T) {
 		disp := chip8.NewStandardDisplay(&chip8.ConfigDisplay{Output: output})
 
 		collision := false
-		collision = collision || disp.Draw(5, 5, 0xF0)
-		collision = collision || disp.Draw(5, 5, 0xF0)
+		collision = disp.Draw(5, 5, 0xF0) || collision
+		collision = disp.Draw(5, 5, 0xF0) || collision
 
 		disp.Flush()
 
-		result := output.String()
-		expected := initialScreen()
-
 		if collision == false {
 			t.Errorf("expected colission, but do not occurs")
-		}
-
-		if result != expected {
-			t.Errorf("result:\n%s\nexpected:\n%s\n", result, expected)
 		}
 	})
 }

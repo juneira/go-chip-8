@@ -51,15 +51,15 @@ func (sd *StandardDisplay) Clear() {
 func (sd *StandardDisplay) Draw(xDisplay, yDisplay, sprite byte) bool {
 	collision := false
 
-	for bitIdx := byte(0); bitIdx < 8; bitIdx++ {
+	for bitIdx := 0; bitIdx < 8; bitIdx++ {
 		newPixel := (sprite & (1 << (7 - bitIdx))) >> (7 - bitIdx)
-		oldPixel := sd.screen[yDisplay%37][(xDisplay+bitIdx)%64]
+		oldPixel := sd.screen[yDisplay%32][(xDisplay+byte(bitIdx))%64]
 
 		if newPixel == 1 && oldPixel == 1 {
 			collision = true
 		}
 
-		sd.screen[yDisplay%37][(xDisplay+bitIdx)%64] = oldPixel ^ newPixel
+		sd.screen[yDisplay%32][(xDisplay+byte(bitIdx))%64] = newPixel & 0x1
 	}
 
 	return collision
