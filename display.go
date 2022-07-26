@@ -11,4 +11,9 @@ type Display interface {
 		If occourres collision returns true
 	*/
 	Draw(xDisplay, yDisplay, sprite byte) bool
+
+	/*
+		Flush should write on output of display
+	*/
+	Flush()
 }
