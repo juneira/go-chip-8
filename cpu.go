@@ -139,6 +139,8 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0x00E0()
 		case 0xEE:
 			c.process0x00EE()
+		default:
+			panic("invalid instruction")
 		}
 	case InstructionType(0x01):
 		c.process0x1NNN(nnn)
@@ -152,6 +154,8 @@ func (c *Cpu) handle(instr Instruction) error {
 		switch instrSubtype {
 		case InstructionSubType(0x00):
 			c.process0x5XY0(x, y)
+		default:
+			panic("invalid instruction")
 		}
 	case InstructionType(0x06):
 		c.process0x6XNN(x, nn)
@@ -177,11 +181,15 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0x8XY7(x, y)
 		case InstructionSubType(0x0E):
 			c.process0x8XYE(x, y)
+		default:
+			panic("invalid instruction")
 		}
 	case InstructionType(0x09):
 		switch instrSubtype {
 		case InstructionSubType(0x00):
 			c.process0x9XY0(x, y)
+		default:
+			panic("invalid instruction")
 		}
 	case InstructionType(0x0A):
 		c.process0xANNN(nnn)
@@ -197,6 +205,8 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0xEX9E(x)
 		case 0xA1:
 			c.process0xEXA1(x)
+		default:
+			panic("invalid instruction")
 		}
 	case InstructionType(0x0F):
 		switch nn {
@@ -218,7 +228,11 @@ func (c *Cpu) handle(instr Instruction) error {
 			c.process0xFX55(x)
 		case 0x65:
 			c.process0xFX65(x)
+		default:
+			panic("invalid instruction")
 		}
+	default:
+		panic("invalid instruction")
 	}
 
 	return nil
@@ -301,6 +315,7 @@ func (c *Cpu) process0x8XY3(x, y byte) {
 func (c *Cpu) process0x8XY4(x, y byte) {
 	val := c.register[x] + c.register[y]
 
+	c.register[0xF] = 0x00
 	if int(c.register[x])+int(c.register[y]) > 0xFF {
 		c.register[0xF] = 0x01
 	}
@@ -312,6 +327,7 @@ func (c *Cpu) process0x8XY4(x, y byte) {
 func (c *Cpu) process0x8XY5(x, y byte) {
 	val := c.register[x] - c.register[y]
 
+	c.register[0xF] = 0x00
 	if int(c.register[x])-int(c.register[y]) >= 0x0 {
 		c.register[0xF] = 0x01
 	}
@@ -321,7 +337,7 @@ func (c *Cpu) process0x8XY5(x, y byte) {
 }
 
 func (c *Cpu) process0x8XY6(x, y byte) {
-	c.register[0xF] = c.register[x] % 2
+	c.register[0xF] = c.register[x] & 0x01
 	c.register[x] >>= c.register[y]
 	c.pc += 2
 }
@@ -329,6 +345,7 @@ func (c *Cpu) process0x8XY6(x, y byte) {
 func (c *Cpu) process0x8XY7(x, y byte) {
 	val := c.register[y] - c.register[x]
 
+	c.register[0xF] = 0x00
 	if int(c.register[y])-int(c.register[x]) >= 0x0 {
 		c.register[0xF] = 0x01
 	}
@@ -373,9 +390,9 @@ func (c *Cpu) process0xDXYN(x, y, n byte) {
 		colission = colission || c.display.Draw(xDisplay, yDisplay+byte(i), sprite)
 	}
 
-	c.register[0xF] = 0
+	c.register[0xF] = 0x00
 	if colission {
-		c.register[0xF] = 1
+		c.register[0xF] = 0x01
 	}
 
 	c.pc += 2
@@ -425,9 +442,9 @@ func (c *Cpu) process0xFX18(x byte) {
 
 func (c *Cpu) process0xFX1E(x byte) {
 	val := int(c.i) + int(c.register[x])
-	c.register[0xF] = 0
+	c.register[0xF] = 0x00
 	if val > 0xFFF {
-		c.register[0xF] = 1
+		c.register[0xF] = 0x01
 	}
 
 	c.i += uint16(c.register[x])
