@@ -107,3 +107,12 @@ func (sm *StardardMemory) Load(register []byte, i uint16) {
 func (sm *StardardMemory) LoadInstruction(pc uint16) Instruction {
 	return Instruction{sm.mem[pc], sm.mem[pc+1]}
 }
+
+// LoadChar returns the address to char VX
+func (sm *StardardMemory) LoadChar(vx byte) uint16 {
+	if vx > 0xF {
+		return 0
+	}
+
+	return uint16(vx * 5)
+}
