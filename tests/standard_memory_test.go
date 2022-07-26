@@ -81,6 +81,19 @@ func TestStandardMemory_LoadChar(t *testing.T) {
 	}
 }
 
+func TestStandardMemory_LoadSprite(t *testing.T) {
+	mem, _ := newMemory()
+
+	expected := byte(0xF0)
+
+	i := uint16(0x11)
+	result := mem.LoadSprite(i)
+
+	if result != expected {
+		t.Errorf("result: %v\nexpected: %v\n", result, expected)
+	}
+}
+
 func newMemory() (*chip8.StardardMemory, *bytes.Buffer) {
 	buf := bytes.NewBuffer([]byte{})
 	rom := chip8.NewRom(buf)

@@ -116,3 +116,8 @@ func (sm *StardardMemory) LoadChar(vx byte) uint16 {
 
 	return uint16(vx * 5)
 }
+
+// LoadSprit returns the sprite on position I
+func (sm *StardardMemory) LoadSprite(i uint16) byte {
+	return sm.mem[i]
+}
