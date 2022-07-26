@@ -89,6 +89,13 @@ func (sm *StandardMemory) Log() {
 	sm.log.Write([]byte(fmt.Sprintf("memory: %v\n", sm.mem)))
 }
 
+// SaveBCD convert vx byte to decimal and save each digit on I, I+1 and I+2
+func (sm *StandardMemory) SaveBCD(vx byte, i uint16) {
+	sm.mem[i] = vx / 100
+	sm.mem[i+1] = (vx % 100) / 10
+	sm.mem[i+2] = (vx % 10)
+}
+
 // Save saves the registers on memory starting on register I
 func (sm *StandardMemory) Save(register []byte, i uint16) {
 	for idx, reg := range register {

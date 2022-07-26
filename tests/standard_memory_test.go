@@ -41,6 +41,27 @@ func TestStandardMemory_Save(t *testing.T) {
 	}
 }
 
+func TestStandardMemory_SaveBCD(t *testing.T) {
+	mem, log := newMemory()
+
+	memExpected := initialMemory()
+	memExpected[0x100] = 1
+	memExpected[0x101] = 5
+	memExpected[0x102] = 2
+
+	vx := byte(152)
+	i := uint16(0x100)
+
+	mem.SaveBCD(vx, i)
+	mem.Log()
+
+	expected := memToStr(memExpected[:])
+	result := log.Bytes()
+	if string(result) != string(expected) {
+		t.Errorf("result: %s\nexpected: %s\n", string(result), string(expected))
+	}
+}
+
 func TestStandardMemory_Load(t *testing.T) {
 	mem, _ := newMemory()
 
