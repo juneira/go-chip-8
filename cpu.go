@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"time"
 )
 
 type Register [0x10]byte
@@ -57,6 +58,22 @@ func NewCpu(config *ConfigCpu) *Cpu {
 		dt:       config.DT,
 		st:       config.ST,
 	}
+}
+
+func (c *Cpu) Start() {
+	go func() {
+		for {
+			if c.dt > 0 {
+				c.dt--
+			}
+
+			if c.st > 0 {
+				c.st--
+			}
+
+			time.Sleep(20 * time.Microsecond)
+		}
+	}()
 }
 
 // Log writes values of registers to "log" of Cpu
@@ -221,7 +238,7 @@ func (c *Cpu) process0x1NNN(nnn uint16) {
 }
 
 func (c *Cpu) process0x2NNN(nnn uint16) {
-	c.stack[c.sp] = c.pc + 0x1
+	c.stack[c.sp] = c.pc + 0x2
 	c.sp++
 	c.pc = nnn
 }
@@ -351,7 +368,7 @@ func (c *Cpu) process0xDXYN(x, y, n byte) {
 	xDisplay, yDisplay := c.register[x], c.register[y]
 	colission := false
 	for i := 0; i < int(n); i++ {
-		sprite := c.memory.LoadSprite(c.i + uint16(i*8))
+		sprite := c.memory.LoadSprite(c.i + uint16(i))
 		colission = colission || c.display.Draw(xDisplay, yDisplay+byte(i), sprite)
 	}
 
