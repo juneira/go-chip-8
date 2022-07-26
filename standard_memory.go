@@ -102,3 +102,8 @@ func (sm *StardardMemory) Load(register []byte, i uint16) {
 		register[idx] = sm.mem[int(i)+idx]
 	}
 }
+
+// LoadInstruction returns the instruction addressed by register PC
+func (sm *StardardMemory) LoadInstruction(pc uint16) Instruction {
+	return Instruction{sm.mem[pc], sm.mem[pc+1]}
+}

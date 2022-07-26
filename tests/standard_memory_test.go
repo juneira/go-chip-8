@@ -46,9 +46,22 @@ func TestStandardMemory_Load(t *testing.T) {
 
 	expected := []byte{0x60, 0x20}
 
-	i := 0x6
+	i := uint16(0x6)
 	result := []byte{0x0, 0x0}
-	mem.Load(result, uint16(i))
+	mem.Load(result, i)
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("result: %v\nexpected: %v\n", result, expected)
+	}
+}
+
+func TestStandardMemory_LoadInstruction(t *testing.T) {
+	mem, _ := newMemory()
+
+	expected := chip8.Instruction{0x60, 0x20}
+
+	pc := uint16(0x6)
+	result := mem.LoadInstruction(pc)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("result: %v\nexpected: %v\n", result, expected)
