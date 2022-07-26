@@ -79,6 +79,10 @@ func (c *Cpu) Process(instr Instruction) error {
 	return nil
 }
 
+func (c *Cpu) NextInstruction() uint16 {
+	return c.pc
+}
+
 func (c *Cpu) handle(instr Instruction) error {
 	x, err := instr.GetX()
 	if err != nil {
