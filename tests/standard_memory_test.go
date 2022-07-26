@@ -9,10 +9,7 @@ import (
 )
 
 func TestStandardMemory_Log(t *testing.T) {
-	buf := bytes.NewBuffer([]byte{})
-	rom := chip8.NewRom(buf)
-	log := &bytes.Buffer{}
-	mem := chip8.NewStardardMemory(&chip8.ConfigMemory{Rom: rom, Log: log})
+	mem, log := newMemory()
 
 	mem.Log()
 
@@ -24,6 +21,31 @@ func TestStandardMemory_Log(t *testing.T) {
 	if string(result) != string(expected) {
 		t.Errorf("\nresult: %v\nexpected: %v\n", string(result), string(expected))
 	}
+}
+
+func TestStandardMemory_Save(t *testing.T) {
+	mem, log := newMemory()
+
+	mem.Save([]byte{0x1F, 0x2F}, 0x100)
+	mem.Log()
+
+	memExpected := initialMemory()
+	memExpected[0x100] = 0x1F
+	memExpected[0x101] = 0x2F
+
+	expected := memToStr(memExpected[:])
+	result := log.Bytes()
+	if string(result) != string(expected) {
+		t.Errorf("\nresult: %v\nexpected: %v\n", string(result), string(expected))
+	}
+}
+
+func newMemory() (*chip8.StardardMemory, *bytes.Buffer) {
+	buf := bytes.NewBuffer([]byte{})
+	rom := chip8.NewRom(buf)
+	log := &bytes.Buffer{}
+	mem := chip8.NewStardardMemory(&chip8.ConfigMemory{Rom: rom, Log: log})
+	return mem, log
 }
 
 func initialMemory() [0xFFF]byte {

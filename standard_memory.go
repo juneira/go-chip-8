@@ -88,3 +88,10 @@ func (sm *StardardMemory) loadGame(rom *Rom) {
 func (sm *StardardMemory) Log() {
 	sm.log.Write([]byte(fmt.Sprintf("memory: %v\n", sm.mem)))
 }
+
+// Save saves the registers on memory starting on register I
+func (sm *StardardMemory) Save(register []byte, i uint16) {
+	for idx, reg := range register {
+		sm.mem[int(i)+idx] = reg
+	}
+}
