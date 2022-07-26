@@ -44,8 +44,8 @@ var fonts = []byte{
 	0xF0, 0x80, 0xF0, 0x80, 0x80,
 }
 
-// StardardMemory implements interface Memory
-type StardardMemory struct {
+// StandardMemory implements interface Memory
+type StandardMemory struct {
 	mem [0xFFF]byte
 	log io.Writer
 }
@@ -56,21 +56,21 @@ type ConfigMemory struct {
 }
 
 // NewRom is a function that receive a "data" as param and return a pointer to Rom
-func NewStardardMemory(config *ConfigMemory) *StardardMemory {
-	sm := &StardardMemory{log: config.Log}
+func NewStandardMemory(config *ConfigMemory) *StandardMemory {
+	sm := &StandardMemory{log: config.Log}
 	sm.loadFonts()
 	sm.loadGame(config.Rom)
 
 	return sm
 }
 
-func (sm *StardardMemory) loadFonts() {
+func (sm *StandardMemory) loadFonts() {
 	for i := 0; i < len(fonts); i++ {
 		sm.mem[fontAddressOffset+i] = fonts[i]
 	}
 }
 
-func (sm *StardardMemory) loadGame(rom *Rom) {
+func (sm *StandardMemory) loadGame(rom *Rom) {
 	i := 0
 	instr := rom.NextInstruction()
 
@@ -85,31 +85,31 @@ func (sm *StardardMemory) loadGame(rom *Rom) {
 }
 
 // Log writes values of memory to "log" of Memory
-func (sm *StardardMemory) Log() {
+func (sm *StandardMemory) Log() {
 	sm.log.Write([]byte(fmt.Sprintf("memory: %v\n", sm.mem)))
 }
 
 // Save saves the registers on memory starting on register I
-func (sm *StardardMemory) Save(register []byte, i uint16) {
+func (sm *StandardMemory) Save(register []byte, i uint16) {
 	for idx, reg := range register {
 		sm.mem[int(i)+idx] = reg
 	}
 }
 
 // Load loads to the register from of memory starting on register I
-func (sm *StardardMemory) Load(register []byte, i uint16) {
+func (sm *StandardMemory) Load(register []byte, i uint16) {
 	for idx := 0; idx < len(register); idx++ {
 		register[idx] = sm.mem[int(i)+idx]
 	}
 }
 
 // LoadInstruction returns the instruction addressed by register PC
-func (sm *StardardMemory) LoadInstruction(pc uint16) Instruction {
+func (sm *StandardMemory) LoadInstruction(pc uint16) Instruction {
 	return Instruction{sm.mem[pc], sm.mem[pc+1]}
 }
 
 // LoadChar returns the address to char VX
-func (sm *StardardMemory) LoadChar(vx byte) uint16 {
+func (sm *StandardMemory) LoadChar(vx byte) uint16 {
 	if vx > 0xF {
 		return 0
 	}
@@ -118,6 +118,6 @@ func (sm *StardardMemory) LoadChar(vx byte) uint16 {
 }
 
 // LoadSprit returns the sprite on position I
-func (sm *StardardMemory) LoadSprite(i uint16) byte {
+func (sm *StandardMemory) LoadSprite(i uint16) byte {
 	return sm.mem[i]
 }
