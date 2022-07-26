@@ -72,7 +72,7 @@ func (c *Cpu) Start() {
 				c.st--
 			}
 
-			time.Sleep(20 * time.Microsecond)
+			time.Sleep(16 * time.Millisecond)
 		}
 	}()
 }
@@ -387,7 +387,7 @@ func (c *Cpu) process0xDXYN(x, y, n byte) {
 	colission := false
 	for i := 0; i < int(n); i++ {
 		sprite := c.memory.LoadSprite(c.i + uint16(i))
-		colission = colission || c.display.Draw(xDisplay, yDisplay+byte(i), sprite)
+		colission = c.display.Draw(xDisplay, yDisplay+byte(i), sprite) || colission
 	}
 
 	c.register[0xF] = 0x00
@@ -395,6 +395,7 @@ func (c *Cpu) process0xDXYN(x, y, n byte) {
 		c.register[0xF] = 0x01
 	}
 
+	c.display.Flush()
 	c.pc += 2
 }
 
