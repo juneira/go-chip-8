@@ -10,7 +10,7 @@ const black = "■"
 // StandardDisplay implements interface Display
 type StandardDisplay struct {
 	output io.Writer
-	screen [31][63]byte
+	screen [32][64]byte
 }
 
 type ConfigDisplay struct {
@@ -25,8 +25,8 @@ func NewStandardDisplay(config *ConfigDisplay) *StandardDisplay {
 // Flush is a function that paint the screen with information of attribute "screen"
 func (sd *StandardDisplay) Flush() {
 	buf := ""
-	for i := 0; i < 31; i++ {
-		for j := 0; j < 63; j++ {
+	for i := 0; i < 32; i++ {
+		for j := 0; j < 64; j++ {
 			if sd.screen[i][j] == 1 {
 				buf += black
 			} else {
@@ -40,8 +40,8 @@ func (sd *StandardDisplay) Flush() {
 
 // Clear sets all pixels to 0
 func (sd *StandardDisplay) Clear() {
-	for i := 0; i < 31; i++ {
-		for j := 0; j < 63; j++ {
+	for i := 0; i < 32; i++ {
+		for j := 0; j < 64; j++ {
 			sd.screen[i][j] = 0
 		}
 	}
@@ -53,13 +53,13 @@ func (sd *StandardDisplay) Draw(xDisplay, yDisplay, sprite byte) bool {
 
 	for bitIdx := byte(0); bitIdx < 8; bitIdx++ {
 		newPixel := (sprite & (1 << (7 - bitIdx))) >> (7 - bitIdx)
-		oldPixel := sd.screen[yDisplay][xDisplay+bitIdx]
+		oldPixel := sd.screen[yDisplay%37][(xDisplay+bitIdx)%64]
 
-		if newPixel != 0 && oldPixel != 0 {
+		if newPixel == 1 && oldPixel == 1 {
 			collision = true
 		}
 
-		sd.screen[yDisplay][xDisplay+bitIdx] = newPixel ^ oldPixel
+		sd.screen[yDisplay%37][(xDisplay+bitIdx)%64] = oldPixel ^ newPixel
 	}
 
 	return collision
