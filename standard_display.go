@@ -37,3 +37,12 @@ func (sd *StandardDisplay) Flush() {
 	}
 	sd.output.Write([]byte(buf))
 }
+
+// Clear sets all pixels to 0
+func (sd *StandardDisplay) Clear() {
+	for i := 0; i < 31; i++ {
+		for j := 0; j < 63; j++ {
+			sd.screen[i][j] = 0
+		}
+	}
+}

@@ -21,6 +21,21 @@ func TestStandardDisplay_Flush(t *testing.T) {
 	}
 }
 
+func TestStandardDisplay_Clear(t *testing.T) {
+	output := &bytes.Buffer{}
+	disp := chip8.NewStandardDisplay(&chip8.ConfigDisplay{Output: output})
+
+	expected := initialScreen()
+
+	disp.Clear()
+	disp.Flush()
+	result := output.String()
+
+	if result != expected {
+		t.Errorf("result:\n%s\nexpected:\n%s\n", result, expected)
+	}
+}
+
 func initialScreen() string {
 	return `□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
 □□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□□
