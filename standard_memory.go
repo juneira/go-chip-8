@@ -95,3 +95,10 @@ func (sm *StardardMemory) Save(register []byte, i uint16) {
 		sm.mem[int(i)+idx] = reg
 	}
 }
+
+// Load loads to the register from of memory starting on register I
+func (sm *StardardMemory) Load(register []byte, i uint16) {
+	for idx := 0; idx < len(register); idx++ {
+		register[idx] = sm.mem[int(i)+idx]
+	}
+}

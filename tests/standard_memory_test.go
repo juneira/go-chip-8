@@ -3,6 +3,7 @@ package chip8_test
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"testing"
 
 	chip8 "github.com/MarceloMPJR/go-chip-8"
@@ -19,7 +20,7 @@ func TestStandardMemory_Log(t *testing.T) {
 	result := log.Bytes()
 
 	if string(result) != string(expected) {
-		t.Errorf("\nresult: %v\nexpected: %v\n", string(result), string(expected))
+		t.Errorf("result: %s\nexpected: %s\n", string(result), string(expected))
 	}
 }
 
@@ -36,7 +37,21 @@ func TestStandardMemory_Save(t *testing.T) {
 	expected := memToStr(memExpected[:])
 	result := log.Bytes()
 	if string(result) != string(expected) {
-		t.Errorf("\nresult: %v\nexpected: %v\n", string(result), string(expected))
+		t.Errorf("result: %s\nexpected: %s\n", string(result), string(expected))
+	}
+}
+
+func TestStandardMemory_Load(t *testing.T) {
+	mem, _ := newMemory()
+
+	expected := []byte{0x60, 0x20}
+
+	i := 0x6
+	result := []byte{0x0, 0x0}
+	mem.Load(result, uint16(i))
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("result: %v\nexpected: %v\n", result, expected)
 	}
 }
 
