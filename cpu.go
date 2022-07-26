@@ -60,6 +60,7 @@ func NewCpu(config *ConfigCpu) *Cpu {
 	}
 }
 
+// Start initialize decrementation of DT and ST registers
 func (c *Cpu) Start() {
 	go func() {
 		for {

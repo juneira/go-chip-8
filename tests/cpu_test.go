@@ -119,7 +119,7 @@ func TestCpu_Process(t *testing.T) {
 					context:          "when SP is zero",
 					register:         chip8.Register{},
 					expectedRegister: chip8.Register{},
-					expectedStack:    chip8.Stack{0x01},
+					expectedStack:    chip8.Stack{0x02},
 					pcExpected:       0xF90,
 					spExpected:       0x01,
 				},
