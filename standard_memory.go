@@ -55,7 +55,7 @@ type ConfigMemory struct {
 	Log io.Writer
 }
 
-// NewRom is a function that receive a "data" as param and return a pointer to Rom
+// NewStandardMemory is a function that receive a config as param and return a pointer to StandardMemory
 func NewStandardMemory(config *ConfigMemory) *StandardMemory {
 	sm := &StandardMemory{log: config.Log}
 	sm.loadFonts()
