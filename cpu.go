@@ -424,6 +424,12 @@ func (c *Cpu) process0xFX18(x byte) {
 }
 
 func (c *Cpu) process0xFX1E(x byte) {
+	val := int(c.i) + int(c.register[x])
+	c.register[0xF] = 0
+	if val > 0xFFF {
+		c.register[0xF] = 1
+	}
+
 	c.i += uint16(c.register[x])
 	c.pc += 2
 }
@@ -439,11 +445,11 @@ func (c *Cpu) process0xFX33(x byte) {
 }
 
 func (c *Cpu) process0xFX55(x byte) {
-	c.memory.Save(c.register[0:x], c.i)
+	c.memory.Save(c.register[0:x+1], c.i)
 	c.pc += 2
 }
 
 func (c *Cpu) process0xFX65(x byte) {
-	c.memory.Load(c.register[0:x], c.i)
+	c.memory.Load(c.register[0:x+1], c.i)
 	c.pc += 2
 }
