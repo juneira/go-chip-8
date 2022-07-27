@@ -17,13 +17,18 @@ import (
 )
 
 // KeyboardInput implements io.Reader
-type KeyBoardInput struct {
-}
+type KeyBoardInput struct{}
 
 func (k *KeyBoardInput) Read(p []byte) (n int, err error) {
 	p[0] = []byte("5")[0]
 
 	return 1, nil
+}
+
+// FakeSound implements chip8.Sound
+type FakeSound struct{}
+
+func (fs *FakeSound) Beep() {
 }
 
 func main() {
@@ -50,6 +55,7 @@ func main() {
 	cpu := chip8.NewCpu(&chip8.ConfigCpu{
 		Display:  display,
 		Keyboard: keyboard,
+		Sound:    &FakeSound{},
 		Memory:   memory,
 		PC:       0x200,
 	})
