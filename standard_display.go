@@ -59,7 +59,7 @@ func (sd *StandardDisplay) Draw(xDisplay, yDisplay, sprite byte) bool {
 			collision = true
 		}
 
-		sd.screen[yDisplay%32][(xDisplay+byte(bitIdx))%64] = newPixel & 0x1
+		sd.screen[yDisplay%32][(xDisplay+byte(bitIdx))%64] = newPixel ^ oldPixel
 	}
 
 	return collision
