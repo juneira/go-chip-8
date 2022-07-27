@@ -13,6 +13,7 @@ type Stack [0x10]uint16
 type Cpu struct {
 	display  Display
 	keyboard Keyboard
+	sound    Sound
 	memory   Memory
 	register Register
 	stack    Stack
@@ -28,6 +29,7 @@ type ConfigCpu struct {
 	// Externals devices
 	Display  Display
 	Keyboard Keyboard
+	Sound    Sound
 	Memory   Memory
 	Stack    Stack
 	Log      io.Writer
@@ -48,6 +50,7 @@ func NewCpu(config *ConfigCpu) *Cpu {
 	return &Cpu{
 		display:  config.Display,
 		keyboard: config.Keyboard,
+		sound:    config.Sound,
 		memory:   config.Memory,
 		register: config.Register,
 		stack:    config.Stack,
@@ -70,6 +73,9 @@ func (c *Cpu) Start() {
 
 			if c.st > 0 {
 				c.st--
+				if c.st == 0 {
+					c.sound.Beep()
+				}
 			}
 
 			time.Sleep(16 * time.Millisecond)
