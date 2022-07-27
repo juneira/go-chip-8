@@ -240,6 +240,7 @@ func (c *Cpu) handle(instr Instruction) error {
 
 func (c *Cpu) process0x00E0() {
 	c.display.Clear()
+	c.display.Flush()
 	c.pc += 2
 }
 
@@ -338,7 +339,7 @@ func (c *Cpu) process0x8XY5(x, y byte) {
 
 func (c *Cpu) process0x8XY6(x, y byte) {
 	c.register[0xF] = c.register[x] & 0x01
-	c.register[x] >>= c.register[y]
+	c.register[x] >>= 1
 	c.pc += 2
 }
 
@@ -356,7 +357,7 @@ func (c *Cpu) process0x8XY7(x, y byte) {
 
 func (c *Cpu) process0x8XYE(x, y byte) {
 	c.register[0xF] = (c.register[x] >> 7)
-	c.register[x] <<= c.register[y]
+	c.register[x] <<= 1
 	c.pc += 2
 }
 

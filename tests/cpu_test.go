@@ -332,13 +332,13 @@ func TestCpu_Process(t *testing.T) {
 				{
 					context:          "when the old least significant bit is 0",
 					register:         chip8.Register{0xAE, 0x03},
-					expectedRegister: chip8.Register{0x15, 0x03},
+					expectedRegister: chip8.Register{0x57, 0x03},
 					pcExpected:       0x2,
 				},
 				{
 					context:          "when the old least significant bit is 1",
 					register:         chip8.Register{0xAF, 0x03},
-					expectedRegister: chip8.Register{0x15, 0x03},
+					expectedRegister: chip8.Register{0x57, 0x03},
 					flag:             true,
 					pcExpected:       0x2,
 				},
@@ -370,13 +370,13 @@ func TestCpu_Process(t *testing.T) {
 				{
 					context:          "when the old most significant bit is 0",
 					register:         chip8.Register{0x1E, 0x03},
-					expectedRegister: chip8.Register{0xF0, 0x03},
+					expectedRegister: chip8.Register{0x3c, 0x03},
 					pcExpected:       0x2,
 				},
 				{
 					context:          "when the old most significant bit is 1",
 					register:         chip8.Register{0xAE, 0x03},
-					expectedRegister: chip8.Register{0x70, 0x03},
+					expectedRegister: chip8.Register{0x5c, 0x03},
 					flag:             true,
 					pcExpected:       0x2,
 				},
