@@ -4,8 +4,8 @@ import (
 	"io"
 )
 
-const white = "□"
-const black = "■"
+const White = "□"
+const Black = "■"
 
 // StandardDisplay implements interface Display
 type StandardDisplay struct {
@@ -28,9 +28,9 @@ func (sd *StandardDisplay) Flush() {
 	for i := 0; i < 32; i++ {
 		for j := 0; j < 64; j++ {
 			if sd.screen[i][j] == 1 {
-				buf += black
+				buf += Black
 			} else {
-				buf += white
+				buf += White
 			}
 		}
 		buf += "\n"
