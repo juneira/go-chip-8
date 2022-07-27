@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,8 +16,25 @@ import (
 	chip8 "github.com/MarceloMPJR/go-chip-8"
 )
 
+// KeyboardInput implements io.Reader
+type KeyBoardInput struct {
+}
+
+func (k *KeyBoardInput) Read(p []byte) (n int, err error) {
+	p[0] = []byte("5")[0]
+
+	return 1, nil
+}
+
 func main() {
-	f, _ := os.Open("../roms/space_invaders.ch8")
+	filepath := flag.String("file", "", "path of CHIP-8 program")
+	flag.Parse()
+
+	if *filepath == "" {
+		panic("param 'file' is required")
+	}
+
+	f, _ := os.Open(*filepath)
 	buf := bufio.NewReader(f)
 
 	rom := chip8.NewRom(buf)
@@ -25,7 +43,7 @@ func main() {
 	output := &bytes.Buffer{}
 	display := chip8.NewStandardDisplay(&chip8.ConfigDisplay{Output: output})
 
-	keyboard := &chip8.StandardKeyboard{}
+	keyboard := chip8.NewStandardKeyboard(&chip8.ConfigKeyboard{Input: &KeyBoardInput{}})
 
 	go paintScreen(output)
 
@@ -37,7 +55,6 @@ func main() {
 	})
 
 	cpu.Start()
-	keyboard.Start()
 
 	for {
 		time.Sleep(5 * time.Millisecond)
