@@ -78,7 +78,7 @@ func (c *Cpu) Start() {
 				}
 			}
 
-			time.Sleep(3 * time.Millisecond)
+			time.Sleep(16 * time.Millisecond)
 		}
 	}()
 }
