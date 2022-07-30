@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"time"
 
 	chip8 "github.com/MarceloMPJR/go-chip-8"
 )
@@ -63,7 +62,6 @@ func main() {
 	cpu.Start()
 
 	for {
-		time.Sleep(5 * time.Millisecond)
 		pc := cpu.NextInstruction()
 		instr := memory.LoadInstruction(pc)
 

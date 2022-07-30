@@ -108,6 +108,8 @@ func (c *Cpu) NextInstruction() uint16 {
 }
 
 func (c *Cpu) handle(instr Instruction) error {
+	time.Sleep(2 * time.Millisecond)
+
 	x, err := instr.GetX()
 	if err != nil {
 		return err
