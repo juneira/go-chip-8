@@ -63,24 +63,10 @@ func NewCpu(config *ConfigCpu) *Cpu {
 	}
 }
 
-// Start initialize decrementation of DT and ST registers
+// Start the interpreter
 func (c *Cpu) Start() {
-	go func() {
-		for {
-			if c.dt > 0 {
-				c.dt--
-			}
-
-			if c.st > 0 {
-				c.st--
-				if c.st == 0 {
-					c.sound.Beep()
-				}
-			}
-
-			time.Sleep(16 * time.Millisecond)
-		}
-	}()
+	go c.startTimer()
+	c.startInterpreter()
 }
 
 // Log writes values of registers to "log" of Cpu
@@ -105,6 +91,31 @@ func (c *Cpu) Process(instr Instruction) error {
 
 func (c *Cpu) NextInstruction() uint16 {
 	return c.pc
+}
+
+func (c *Cpu) startTimer() {
+	for {
+		if c.dt > 0 {
+			c.dt--
+		}
+
+		if c.st > 0 {
+			c.st--
+			if c.st == 0 {
+				c.sound.Beep()
+			}
+		}
+
+		time.Sleep(16 * time.Millisecond)
+	}
+}
+
+func (c *Cpu) startInterpreter() {
+	for {
+		pc := c.NextInstruction()
+		instr := c.memory.LoadInstruction(pc)
+		c.Process(instr)
+	}
 }
 
 func (c *Cpu) handle(instr Instruction) error {
