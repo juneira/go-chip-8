@@ -116,10 +116,8 @@ func TestStandardMemory_LoadSprite(t *testing.T) {
 }
 
 func newMemory() (*chip8.StandardMemory, *bytes.Buffer) {
-	buf := bytes.NewBuffer([]byte{})
-	rom := chip8.NewRom(buf)
 	log := &bytes.Buffer{}
-	mem := chip8.NewStandardMemory(&chip8.ConfigMemory{Rom: rom, Log: log})
+	mem := chip8.NewStandardMemory(&chip8.ConfigMemory{Rom: &MockRom{}, Log: log})
 	return mem, log
 }
 

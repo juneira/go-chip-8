@@ -59,3 +59,9 @@ func (mm *MockMemory) LoadChar(vx byte) uint16 {
 func (mm *MockMemory) LoadSprite(i uint16) byte {
 	return 0x00
 }
+
+type MockRom struct{}
+
+func (mr *MockRom) Read(p []byte) (int, error) {
+	return 0, nil
+}

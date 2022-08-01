@@ -5,7 +5,9 @@ import (
 	"io"
 )
 
+const memSize = 0xFFF
 const romAddressOffset = 0x200
+const romSize = memSize - romAddressOffset
 const fontAddressOffset = 0x0
 
 // Sprite of fonts
@@ -46,12 +48,12 @@ var fonts = []byte{
 
 // StandardMemory implements interface Memory
 type StandardMemory struct {
-	mem [0xFFF]byte
+	mem [memSize]byte
 	log io.Writer
 }
 
 type ConfigMemory struct {
-	Rom *Rom
+	Rom io.Reader
 	Log io.Writer
 }
 
@@ -70,17 +72,18 @@ func (sm *StandardMemory) loadFonts() {
 	}
 }
 
-func (sm *StandardMemory) loadGame(rom *Rom) {
-	i := 0
-	instr := rom.NextInstruction()
+func (sm *StandardMemory) loadGame(rom io.Reader) {
+	buf := [romSize]byte{}
+	n, err := rom.Read(buf[:])
+	if err != nil {
+		panic(err)
+	}
+	if n == 0 {
+		return
+	}
 
-	for instr != nil {
-		sm.mem[romAddressOffset+i] = []byte(*instr)[0]
-		i++
-		sm.mem[romAddressOffset+i] = []byte(*instr)[1]
-		i++
-
-		instr = rom.NextInstruction()
+	for i := 0; i < n; i++ {
+		sm.mem[romAddressOffset+i] = buf[i]
 	}
 }
 
