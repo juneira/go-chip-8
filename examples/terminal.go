@@ -41,8 +41,7 @@ func main() {
 	f, _ := os.Open(*filepath)
 	buf := bufio.NewReader(f)
 
-	rom := chip8.NewRom(buf)
-	memory := chip8.NewStandardMemory(&chip8.ConfigMemory{Rom: rom})
+	memory := chip8.NewStandardMemory(&chip8.ConfigMemory{Rom: buf})
 
 	output := &bytes.Buffer{}
 	display := chip8.NewStandardDisplay(&chip8.ConfigDisplay{Output: output})
